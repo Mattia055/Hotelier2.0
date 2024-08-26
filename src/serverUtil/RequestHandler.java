@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -19,17 +18,15 @@ import lib.packet.*;
 import lib.packet.Request.Method;
 import lib.packet.Response.Status;
 import lib.packet.Response.Error;
-
-import lib.struct.Hotel;
-import lib.struct.Review;
+import lib.struct.HotelDTO;
 import lib.struct.Score;
 
 public class RequestHandler implements Runnable{
 
     private static final Type RequestT;
     private static final Type ResponseT;
-    private static final Type HotelT;
-    private static final Type HotelListT;
+    private static final Type HotelDTOT;
+    private static final Type HotelDTOListT;
     private static final Type ScoreT;
 
     private static Gson     Gson;
@@ -46,12 +43,12 @@ public class RequestHandler implements Runnable{
 
     static{
 
-        RequestT    = new TypeToken<Request>(){}.getType();
-        ResponseT   = new TypeToken<Response>(){}.getType();
-        HotelT      = new TypeToken<Hotel>(){}.getType();
-        HotelListT  = new TypeToken<ArrayList<Hotel>>(){}.getType();
-        ScoreT      = new TypeToken<Score>(){}.getType();
-        Gson        = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+        RequestT        = new TypeToken<Request>(){}.getType();
+        ResponseT       = new TypeToken<Response>(){}.getType();
+        HotelDTOT       = new TypeToken<Hotel>(){}.getType();
+        HotelDTOListT   = new TypeToken<ArrayList<Hotel>>(){}.getType();
+        ScoreT          = new TypeToken<Score>(){}.getType();
+        Gson            = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
 
         HandlerTable = new EnumMap<>(Request.Method.class);
 
@@ -62,7 +59,6 @@ public class RequestHandler implements Runnable{
         HandlerTable.put(Method.EXT_LOGOUT,         RequestHandler::handleExtLogout);
         HandlerTable.put(Method.SEARCH_HOTEL,       RequestHandler::handleSearch);
         HandlerTable.put(Method.SEARCH_ALL,         RequestHandler::handleSearchAll);
-        //HandlerTable.put(Method.HOTEL_SELECT,     RequestHandler::handleHtlSet); // set dell'hotel all'interno della sessione
         HandlerTable.put(Method.REVIEW,             RequestHandler::handleReview);
         HandlerTable.put(Method.SHOW_BADGE,         RequestHandler::handleShowBadge);
 
@@ -280,12 +276,13 @@ public class RequestHandler implements Runnable{
         if(session.LastMethod == Method.SEARCH_HOTEL){
             //effettua il casting a stringa della città () e cerca nella tabella hash
             //L'hotel, prima lo rende case insensitive
-            String city = (String) session.getData();
-            String hotel = ((String)request.getData()).toLowerCase().trim();
+            String city     = (String) session.getData();
+            String hotel    = ((String)request.getData()).toLowerCase().trim();
             
             //trova l'hotel, lo converte a JSON per portabilità e lo invia
             Hotel h = HotelsTable.get(city).get(hotel);
-            return h != null? new Response(Status.SUCCESS,Gson.toJson(h,HotelT)) : new Response(Error.NO_SUCH_HOTEL);
+            return h != null?   new Response(Status.SUCCESS,Gson.toJson(h.toDTO(),HotelDTOT)) : 
+                                new Response(Error.NO_SUCH_HOTEL);
         }
 
         //controllo se la città esiste
@@ -314,16 +311,18 @@ public class RequestHandler implements Runnable{
          * caso elabora direttamente dalla sessione
          */
         Iterator<Hotel>  iterator   = null;
-        ArrayList<Hotel> batch      = null;
+        ArrayList<HotelDTO> batch      = null;
 
-        if(session.LastMethod != Method.SEARCH_ALL && request.getData() != null){
+        if(session.LastMethod != Method.SEARCH_ALL){
+            if(request.getData() == null) return new Response(Error.INVALID_REQUEST);
             //inizializzo l'iteratore
             String city = ((String)request.getData()).toLowerCase().trim();
             if(HotelsTable.get(city) == null) return new Response(Error.NO_SUCH_CITY);
             iterator = HotelsTable.get(city).values().iterator();
-            batch = new ArrayList<Hotel>(DEF_BATCH_SIZE);
+            batch = new ArrayList<HotelDTO>(DEF_BATCH_SIZE);
             session.setMethod(Method.SEARCH_ALL);
         }
+        
         
         //istanzio l'iteratore della collezione nella sessione
         /*
@@ -338,22 +337,37 @@ public class RequestHandler implements Runnable{
                 return new Response(Error.BAD_SESSION);
             }
             iterator = (Iterator<Hotel>) GenericIterator;
-            batch = new ArrayList<Hotel>(DEF_BATCH_SIZE){{
-                add((Hotel) nextElement);
+
+            batch = new ArrayList<HotelDTO>(DEF_BATCH_SIZE){{
+                add(((Hotel) nextElement).toDTO());
             }};  
         }
         
+        boolean finished = true;
         for(int i = batch.size(); i <= DEF_BATCH_SIZE ; i++){
-            if(iterator.hasNext()) batch.add(iterator.next());
+            if(iterator.hasNext()) batch.add(iterator.next().toDTO());
             else{
                 session.clearMethod();
                 session.clearData();
-                return new Response(Status.SUCCESS,Gson.toJson(batch,HotelListT));
+                finished = false;
+                break;
             }
         }
 
-        
-        return new Response(Status.AWAIT_INPUT,Gson.toJson(batch,HotelListT));
+        //Directly implemented in the first loop
+        /*
+        List<HotelDTO> DTObatch =  batch.stream()
+                                        .map(Hotel::toDTO)
+                                        .collect(Collectors.toList());
+        */
+        /*
+        ArrayList<HotelDTO> DTObatch = new ArrayList<HotelDTO>();
+        for(Hotel h : batch){
+            DTObatch.add(h.toDTO());
+        */
+
+        return new Response(finished ? Status.SUCCESS : Status.AWAIT_INPUT,Gson.toJson(batch,HotelDTOListT));
+
     }
     
     public static Response handleReview(Request request, Session session) {

@@ -2,30 +2,15 @@ package lib.api;
 
 import java.util.EnumMap;
 
+
+
 import lib.packet.Response.Error;
+import lib.struct.HotelDTO;
 
 /**
  * Represents a response from an API operation.
  */
 public class APIResponse {
-
-    public enum Status {
-        OK,
-        NO_SUCH_USER,
-        BAD_PASSWORD,
-        USER_EXISTS,
-        MUST_LOGIN,
-        NO_SUCH_CITY,
-        NO_SUCH_HOTEL,
-        ALREADY_LOGGED,
-        NOT_LOGGED,
-        SCORE_GLOBAL,
-        SCORE_POSITION,
-        SCORE_CLEANING,
-        SCORE_PRICE,
-        SCORE_SERVICE,
-        SERVER_ERROR;  
-    }
 
     private static final EnumMap<Error,Status> statusMapping = new EnumMap<>(Error.class);
 
@@ -58,19 +43,38 @@ public class APIResponse {
      * @param message A message describing the response.
      * @param data    Any additional data related to the response.
      */
-    protected APIResponse(Error Error,String message, String[] data) {
+
+    protected APIResponse(Status status, String message, Object data) {
+        this.status = status;
+        this.message = status.getPhrase() + " : " + message;
+        this.data = data;
+
+    }    
+
+    protected APIResponse(Error Error,String message, Object data) {
         this.status = statusMapping.get(Error);
         if(this.status == null){
             //API error
             throw new IllegalArgumentException("Error not mapped to a status");
         }
-        this.message = status == Status.OK? "The operation was successful" :
-                                            Error.getMnemonic() + ": " + message;
+        this.message = status.getPhrase() + " : " + message;
         this.data = data;
     }
 
-    protected APIResponse(Error Error, String[] data) {
+    protected APIResponse(Error Error, Object data) {
         this(Error, null, data);
+    }
+
+    protected APIResponse(Status status, String message) {
+        this(status, message, null);
+    }
+
+    protected APIResponse(Status status, Object data) {
+        this(status, null, data);
+    }
+
+    protected APIResponse(Status status) {
+        this(status, null, null);
     }
 
     protected APIResponse(Error Error) {
@@ -131,6 +135,30 @@ public class APIResponse {
         this.data = data;
     }
 
+
+    public HotelDTO[] getHotelList() {
+        try{
+            return (HotelDTO[]) data;
+        } catch (ClassCastException e){
+            return null;
+        }
+
+    }
+
+    public String getString() {
+        try{
+            return (String) data;
+
+        } catch (ClassCastException e){
+            return null;
+        }
+    }
+
+
+    /*Da cambiare
+     * Aggiungere string builder per effettuare il casting del data Object in base allo status della richiesta
+     * 
+    */
     @Override
     public String toString() {
         return "APIResponse{" +

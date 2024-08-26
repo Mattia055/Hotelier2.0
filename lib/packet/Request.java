@@ -5,12 +5,10 @@ public class Request {
     public static enum Method {
         REGISTER,
         LOGIN,
-        NAME_SET, //set dell'username all'interno della sessione
         LOGOUT,
         EXT_LOGOUT,
         SEARCH_HOTEL,
         SEARCH_ALL,
-        HOTEL_SELECT, //set dell'hotel all'interno della sessione
         REVIEW,
         SHOW_BADGE
     }

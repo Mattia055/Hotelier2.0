@@ -14,8 +14,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import lib.struct.Hotel;
-import lib.struct.Review;
 import lib.struct.Score;
 
 /**

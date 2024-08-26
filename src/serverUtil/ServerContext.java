@@ -23,8 +23,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import lib.etc.ConfigLoader;
-import lib.struct.Hotel;
-import lib.struct.Review;
 
 /**
  * Questa classe gestisce il contesto del server, inclusi i parametri di configurazione,
@@ -300,7 +298,7 @@ public class ServerContext {
     protected static void scheduleTasks() {
         ScheduledTasks = new ArrayList<ScheduledFuture<?>>(){{
         add(FileHandlerPool.scheduleWithFixedDelay(
-            new Parser.HotelSave(Hotelsto, HotelsTable), SAVE_INIT, SAVE_DELAY, TIME_DELAY
+            new Parser.HotelsSave(Hotelsto, HotelsTable), SAVE_INIT, SAVE_DELAY, TIME_DELAY
         ));
         add(FileHandlerPool.scheduleWithFixedDelay(
             new Parser.UsersSave(Usersto, UsersTable), SAVE_INIT, SAVE_DELAY, TIME_DELAY
@@ -332,7 +330,7 @@ public class ServerContext {
         Future<?> rank = RankingPool.submit(RankManager.getInstance());
         FileHandlerPool.submit(new Parser.UsersSave(Usersto, UsersTable));
         waitForTaskCompletion(rank);
-        FileHandlerPool.submit(new Parser.HotelSave(Hotelsto, HotelsTable));
+        FileHandlerPool.submit(new Parser.HotelsSave(Hotelsto, HotelsTable));
         waitForTaskCompletion(FileHandlerPool.submit(new Parser.ReviewsSave(Reviewsto, DumpingQueue, MAX_DUMP, DUMP_WAIT, DUMP_UNIT)));
         FileHandlerPool.submit(new Parser.MergeReviews(Reviewsto));
 

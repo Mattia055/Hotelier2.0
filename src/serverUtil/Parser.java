@@ -21,8 +21,6 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 import lib.etc.TempFileUtil;
-import lib.struct.Hotel;
-import lib.struct.Review;
 
 /**
  * Gestisce il parsing e la serializzazione dei dati utilizzando la libreria Gson per gli hotel, gli utenti e le recensioni.
@@ -89,7 +87,7 @@ public class Parser {
     /**
      * Salva gli hotel nella mappa in un file JSON.
      */
-    public static class HotelSave implements Runnable {
+    public static class HotelsSave implements Runnable {
         private String filepath; // Percorso del file JSON in cui salvare gli hotel
         private Collection<ConcurrentHashMap<String, Hotel>> HotelsToSave; // Collezione di mappe di hotel da salvare
         private Path tempfile; // Percorso del file temporaneo
@@ -100,7 +98,7 @@ public class Parser {
          * @param path Percorso del file JSON.
          * @param hotels Collezione di mappe di hotel da salvare.
          */
-        public HotelSave(String path, ConcurrentHashMap<String, ConcurrentHashMap<String, Hotel>> hotels) {
+        public HotelsSave(String path, ConcurrentHashMap<String, ConcurrentHashMap<String, Hotel>> hotels) {
             tempfile = null;
             HotelsToSave = hotels.values();
             filepath = path;
