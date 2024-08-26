@@ -161,11 +161,21 @@ public class APIResponse {
     */
     @Override
     public String toString() {
-        return "APIResponse{" +
-                "status =" + status +
-                ", message ='" + message + '\'' +
-                ", data =" + data +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("APIResponse{\n" +
+                "status = " + status.name() +
+                ",\n message = " + message +
+                ",\n data = ");
+
+        if(data instanceof String)
+            sb.append((String) data);
+        else if(data instanceof HotelDTO[]){
+            HotelDTO[] hotels = (HotelDTO[]) data;
+            for (HotelDTO hotel : hotels) {
+                sb.append(hotel.toString() + "\n");
+            }
+        }
+        return sb.toString();
     }
 }
 
