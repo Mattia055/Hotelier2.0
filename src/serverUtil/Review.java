@@ -1,6 +1,9 @@
-package lib.struct;
+package serverUtil;
 
+import lib.struct.Score;
 import java.time.LocalDateTime;
+
+
 
 /**
  * Rappresenta una recensione per un hotel.

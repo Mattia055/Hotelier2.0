@@ -1,4 +1,7 @@
-package lib.struct;
+package serverUtil;
+
+import lib.struct.HotelDTO;
+import lib.struct.Score;
 
 import java.util.Arrays;
 
@@ -13,7 +16,7 @@ public class Hotel{
     //this gets modified when ranking manager updates the score
     private Score       rating;
 
-    public Hotel (int id, String name, String description, String city, String phone, String[] services, int rate, Score rating) {
+    public Hotel (int id, String name, String description, String city, String phone, String[] services, Score rating) {
         this.id         = id;
         this.name       = name;
         this.description= description;
@@ -77,6 +80,10 @@ public class Hotel{
         }
         
         return str.toString();
+    }
+
+    public HotelDTO toDTO(){
+        return new HotelDTO(name, description, city, phone, services, rating);
     }
 
 }
