@@ -27,3 +27,9 @@ class ResponseParsingException extends HotelierAPIException {
         super(message, cause);
     }
 }
+
+class InvalidMethodInvocation extends HotelierAPIException {
+    public InvalidMethodInvocation(String message) {
+        super(message);
+    }
+}
