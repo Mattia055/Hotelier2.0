@@ -1,5 +1,5 @@
-JSON      	= lib/etc/gson.jar
 LIB    		= lib
+JSON      	= $(LIB)/etc/gson.jar
 CONF      	= config
 META      	= META-INF
 SERVER_META = $(META)/SERVER.MF
@@ -19,30 +19,49 @@ CLIENT_JAR = Client.jar
 SERVER_DEPENDENCIES = -C $(CLASS) serverUtil -C $(CLASS) $(LIB)/etc -C $(CLASS) $(LIB)/struct -C $(CLASS) $(LIB)/packet -C $(CONF) server.properties
 EXTRACT_DIR = ./extract
 
-DELIMITER = ==========================
+#wildcards for java files
 
-.PHONY: clean
+LIB_SOURCES 		= $(wildcard $(LIB)/**/*.java)
+SERVLIB_SOURCES 	= $(filter-out $(LIB)/api%, $(LIB_SOURCES))
+SERVUTIL_SOURCES 	= $(wildcard $(SERVER_SRC)/*.java)
+
+SERVLIB_CLASSES 	= $(patsubst %.java, $(CLASS)/%.class,$(SERVLIB_SOURCES))
+SERVUTIL_CLASSES 	= $(patsubst $(SERVER_SRC)/%.java, $(CLASS)/serverUtil/%.class, $(SERVUTIL_SOURCES))
 
 all: $(SERVER_JAR)
-
 	
 
-lib: lib/**/*.java lib/**/*.jar
-	@echo Compiling lib ... && echo $(DELIMITER)
-	mkdir -p $(CLASS)
-	$(JAVAC) $(JFLAGS) -d $(CLASS) $(LIB)/etc/*.java
-	$(JAVAC) $(JFLAGS) -d $(CLASS) $(LIB)/packet/*.java
-	$(JAVAC) $(JFLAGS) -d $(CLASS) $(LIB)/struct/*.java
-	$(JAVAC) $(JFLAGS) -d $(CLASS) -cp $(JSON):$(CLASS) $(LIB)/api/*.java
-	@echo $(DELIMITER)
+test:
+	@echo $(SERVLIB_SOURCES)
+	@echo
+	@echo $(LIB_SOURCES)
+	@echo
+	@echo $(SERVLIB_CLASSES)
+	@echo
+	@echo $(SERVUTIL_SOURCES)
+	@echo
+	@echo $(SERVUTIL_CLASSES)
 
-#controllo sull'eventuale modifica dei file
-$(SERVER_JAR): lib
-	@echo Compiling Server.jar ... && echo $(DELIMITER)
+$(SERVLIB_CLASSES): $(SERVLIB_SOURCES) 
+	@echo "╔════════════════════════╗"
+	@echo "║ Compiling libraries... ║"
+	@echo "╚════════════════════════╝"
 	mkdir -p $(CLASS)
+	$(JAVAC) $(JFLAGS) -d $(CLASS) $(SERVLIB_SOURCES)
+
+# Rule to compile server utility code
+$(SERVUTIL_CLASSES): $(SERVUTIL_SOURCES) $(SERVLIB_CLASSES)
+	@echo "╔══════════════════════════╗"
+	@echo "║ Compiling Server Core... ║"
+	@echo "╚══════════════════════════╝"
 	$(JAVAC) $(JFLAGS) -d $(CLASS) -cp $(JSON):$(CLASS) $(SERVER_SRC)/*.java
+
+
+$(SERVER_JAR): $(SERVUTIL_CLASSES) $(SERVLIB_CLASSES)
+	@echo "╔══════════════════════════╗"
+	@echo "║ Building Server.jar ...  ║"
+	@echo "╚══════════════════════════╝"
 	$(JAR) $(JAR_FLAGS) $(SERVER_JAR) $(SERVER_META) $(SERVER_DEPENDENCIES)
-	@echo $(DELIMITER)
 
 extract: $(SERVER_JAR)
 	@rm -r $(EXTRACT_DIR) && mkdir -p $(EXTRACT_DIR) && cp $(SERVER_JAR) $(EXTRACT_DIR)
@@ -50,6 +69,9 @@ extract: $(SERVER_JAR)
 
 
 runServer: $(SERVER_JAR)
+	@echo "╔════════════════════════╗"
+	@echo "║ Running Server.jar ... ║"
+	@echo "╚════════════════════════╝"
 	@java -jar $(SERVER_JAR) || true
 
 clean: 

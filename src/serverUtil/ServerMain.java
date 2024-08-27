@@ -9,11 +9,12 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ServerMain {
 
     protected static Selector SelectorInstance = null;
-    private volatile static boolean running = true;
+    private volatile static AtomicBoolean running = new AtomicBoolean(true);
 
     public static Selector getSelector(){
         return SelectorInstance;
@@ -32,16 +33,23 @@ public class ServerMain {
             //apertura del selector
             SelectorInstance = selector;
 
+            Thread t = Thread.currentThread();
+
             //configurazione dell'handler delle interruzioni
             Runtime.getRuntime().addShutdownHook(new Thread(( ) -> {
+
                 try{
-                    running = false;
+                    System.out.println("Shutdown Hook triggered");
+                    running.set(false);
                     selector.wakeup();
-                    //welcomeSocket.close();
-                    //selector.close();
                     ServerContext.Terminate();
+                    System.out.println("Waiting for server to close...");
+                    t.join();
                     System.out.println("Server closed");
+                    welcomeSocket.close();
+                    selector.close();
                 }
+
                 catch(Exception e){
                     e.printStackTrace();
                 }
@@ -53,7 +61,7 @@ public class ServerMain {
             
             System.out.println("Channel opened | ShutdownHook registered");
             //inizia il ciclo di ascolto
-            while(running){
+            while(running.get()){
                 selector.select();
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 Iterator<SelectionKey> keyIterator = selectedKeys.iterator();
@@ -76,6 +84,13 @@ public class ServerMain {
                     keyIterator.remove();
                 }
             }
+
+            /* Testing
+            try{
+                Thread.sleep(6000);
+            }catch( InterruptedException e){
+                e.printStackTrace();
+            */
 
         } catch(IOException e) { 
             e.printStackTrace();

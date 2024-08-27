@@ -53,14 +53,14 @@ public class RequestHandler implements Runnable{
         HandlerTable = new EnumMap<>(Request.Method.class);
 
         //inizializzo la HandlerTable
-        HandlerTable.put(Method.REGISTER,           RequestHandler::handleRegister);
-        HandlerTable.put(Method.LOGIN,              RequestHandler::handleLogin);
-        HandlerTable.put(Method.LOGOUT,             RequestHandler::handleLogout);
-        HandlerTable.put(Method.EXT_LOGOUT,         RequestHandler::handleExtLogout);
-        HandlerTable.put(Method.SEARCH_HOTEL,       RequestHandler::handleSearch);
-        HandlerTable.put(Method.SEARCH_ALL,         RequestHandler::handleSearchAll);
-        HandlerTable.put(Method.REVIEW,             RequestHandler::handleReview);
-        HandlerTable.put(Method.SHOW_BADGE,         RequestHandler::handleShowBadge);
+        HandlerTable.put(Method.REGISTER,       RequestHandler::handleRegister);
+        HandlerTable.put(Method.LOGIN,          RequestHandler::handleLogin);
+        HandlerTable.put(Method.LOGOUT,         RequestHandler::handleLogout);
+        HandlerTable.put(Method.EXT_LOGOUT,     RequestHandler::handleExtLogout);
+        HandlerTable.put(Method.SEARCH_HOTEL,   RequestHandler::handleSearch);
+        HandlerTable.put(Method.SEARCH_ALL,     RequestHandler::handleSearchAll);
+        HandlerTable.put(Method.REVIEW,         RequestHandler::handleReview);
+        HandlerTable.put(Method.SHOW_BADGE,     RequestHandler::handleShowBadge);
 
         ServerContext.getInstance();
 
@@ -433,8 +433,8 @@ public class RequestHandler implements Runnable{
             String city     = data[0].toLowerCase().trim();
             String hotel    = data[1].toLowerCase().trim();
 
-            if(HotelsTable.get(city) == null) return new Response(Error.NO_SUCH_CITY);
-            if(HotelsTable.get(city).get(hotel) == null) return new Response(Error.NO_SUCH_HOTEL);
+            if(HotelsTable.get(city) == null)               return new Response(Error.NO_SUCH_CITY);
+            if(HotelsTable.get(city).get(hotel) == null)    return new Response(Error.NO_SUCH_HOTEL);
             
             session.setData(HotelsTable.get(city).get(hotel).getID());
             session.setMethod(Method.REVIEW);
