@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import lib.struct.Score;
+import lib.share.struct.Score;
 
 /**
  * Gestisce il ranking degli hotel basato sulle recensioni degli utenti e notifica gli aggiornamenti tramite UDP.

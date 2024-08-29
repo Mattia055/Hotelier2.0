@@ -124,6 +124,9 @@ public class User {
     }
 
     public boolean passwordTest(String compare){
-        return fingerprint == compare;
+        System.out.println("Fingerprint: " + fingerprint+ " Compare: " + compare);
+        //stampa la lunghezza delle due stringhe
+        System.out.println("Fingerprint length: " + fingerprint.length() + " Compare length: " + compare.length());
+        return fingerprint.equals(compare);
     }
 }

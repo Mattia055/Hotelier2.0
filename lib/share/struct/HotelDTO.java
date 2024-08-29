@@ -1,13 +1,12 @@
-package serverUtil;
-
-import lib.share.struct.HotelDTO;
-import lib.share.struct.Score;
+package lib.share.struct;
 
 import java.util.Arrays;
 
-public class Hotel{
+/*Data Transfer Object */
 
-    private int         id; 
+public class HotelDTO{
+
+    //private int         id; esempio di campo che preferirei non trasferire
     private String      name;
     private String      description;
     private String      city;
@@ -16,8 +15,8 @@ public class Hotel{
     //this gets modified when ranking manager updates the score
     private Score       rating;
 
-    public Hotel (int id, String name, String description, String city, String phone, String[] services, Score rating) {
-        this.id         = id;
+    public HotelDTO (String name, String description, String city, String phone, String[] services, Score rating) {
+        //this.id         = id;
         this.name       = name;
         this.description= description;
         this.city       = city;
@@ -25,10 +24,10 @@ public class Hotel{
         this.services   = services;
         this.rating     = rating;
     }
-
+    /*
     public int getID(){
         return id;
-    }
+    }*/
 
     public String getName(){
         return name;
@@ -80,10 +79,6 @@ public class Hotel{
         }
         
         return str.toString();
-    }
-
-    public HotelDTO toDTO(){
-        return new HotelDTO(name, description, city, phone, services, rating);
     }
 
 }

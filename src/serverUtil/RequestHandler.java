@@ -14,12 +14,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import lib.packet.*;
-import lib.packet.Request.Method;
-import lib.packet.Response.Status;
-import lib.packet.Response.Error;
-import lib.struct.HotelDTO;
-import lib.struct.Score;
+import lib.share.packet.*;
+import lib.share.packet.Request.Method;
+import lib.share.packet.Response.Status;
+import lib.share.packet.Response.Error;
+import lib.share.struct.HotelDTO;
+import lib.share.struct.Score;
 
 public class RequestHandler implements Runnable{
 
@@ -96,12 +96,16 @@ public class RequestHandler implements Runnable{
     public void run(){
         
         try{
-            Request requestObject = Gson.fromJson(buffer.getStringData(), RequestT);
+            System.out.println("HANDLING REQUEST");
+            String str = buffer.getString();
+            Request requestObject = Gson.fromJson(str, RequestT);
+            //resetto il buffer
             BiFunction<Request,Session,Response> handler = HandlerTable.get(requestObject.getMethod());
             Response response = (handler != null) ? handler.apply(requestObject, session) : new Response(Error.INVALID_REQUEST);
-            buffer.wrapMessage(Gson.toJson(response,ResponseT).getBytes());
+            //System.out.println("Risposta pronta");
+            buffer.wrapString(Gson.toJson(response,ResponseT));
+            System.out.println("FINISHED HANDLING");
             key.interestOps(SelectionKey.OP_WRITE);
-            //assicura che l'operazione sia registrata correttamente
             /*
              * chiamare wakeup sul selettore è per evitare la
              * race condition tra il thread che setta la nuova 
@@ -119,11 +123,15 @@ public class RequestHandler implements Runnable{
              * immediately wakes up from the select() method. This forces the selector to re-evaluate the 
              * interest operations of all registered keys, including the one you just modified.
              */
-            ServerMain.getSelector().wakeup();
-
+            //ServerMain.getSelector().wakeup();
+            
         } catch(Exception e) {
+            key.cancel();
             e.printStackTrace();
+        } finally{
+            ServerMain.getSelector().wakeup();
         }
+        return;
     }
 
     /*
@@ -153,9 +161,11 @@ public class RequestHandler implements Runnable{
              * se successo allora non devo mantenere dati dell'utente;
              */
             session.flush();
-            return UsersTable.putIfAbsent(u.username,u) == null?
-                                    new Response(Status.SUCCESS):
-                                    new Response(Error.USER_EXISTS);
+            if(UsersTable.putIfAbsent(u.username,u) == null){
+                return new Response(Status.SUCCESS);
+            }
+            
+            return new Response(Error.USER_EXISTS);
         }
         
         //controllo se l'utente esiste
@@ -166,6 +176,7 @@ public class RequestHandler implements Runnable{
             return new Response(Status.AWAIT_INPUT);
         }
         else{
+            session.flush();
             return new Response(Error.USER_EXISTS);
         }
 

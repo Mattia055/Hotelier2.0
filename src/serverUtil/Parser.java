@@ -20,7 +20,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
-import lib.etc.TempFileUtil;
+import lib.server.temp.TempFileUtil;
 
 /**
  * Gestisce il parsing e la serializzazione dei dati utilizzando la libreria Gson per gli hotel, gli utenti e le recensioni.
@@ -147,16 +147,19 @@ public class Parser {
          * @param table Mappa degli utenti da aggiornare.
          */
         public UsersLoad(String path, ConcurrentHashMap<String, User> table) {
-            filepath = path;
+            this.filepath = path;
             Map = table;
         }
 
         @Override
         public void run() {
-            try (JsonReader reader = new JsonReader(new FileReader(filepath))) {
+            try (JsonReader reader = new JsonReader(new FileReader("./"+filepath))) {
                 List<User> UsersFromFile = Gson.fromJson(reader, UserListT);
-                for (User u : UsersFromFile) Map.put(u.getUsername(), u);
+                for (User u : UsersFromFile){
+                    Map.put(u.getUsername(), u);
+                }
             } catch (FileNotFoundException e) {
+                System.out.println("File not found " + filepath);
                 // Gestisce il caso in cui il file non sia trovato
                 return;
             } catch (Exception e) {
@@ -184,6 +187,7 @@ public class Parser {
             this.filepath = filepath;
             UsersToSave = Users.values();
             tempfile = null;
+            System.out.println("Parser: saving users to " + filepath);
         }
 
         @Override

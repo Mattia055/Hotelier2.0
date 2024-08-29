@@ -1,6 +1,6 @@
 package serverUtil;
 
-import lib.struct.Score;
+import lib.share.struct.Score;
 import java.time.LocalDateTime;
 
 

@@ -1,6 +1,6 @@
 package serverUtil;
 
-import lib.packet.Request.Method;
+import lib.share.packet.Request.Method;
 
 public class Session {
     protected final ClientBuffer clientBuffer;

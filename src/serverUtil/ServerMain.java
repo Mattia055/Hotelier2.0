@@ -58,21 +58,20 @@ public class ServerMain {
             welcomeSocket.bind(new InetSocketAddress(ServerContext.PORT))
                          .configureBlocking(false)
                          .register(selector, SelectionKey.OP_ACCEPT);
-            
-            System.out.println("Channel opened | ShutdownHook registered");
+
             //inizia il ciclo di ascolto
             while(running.get()){
                 selector.select();
+                //System.out.println("Selector selected");
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
                 Iterator<SelectionKey> keyIterator = selectedKeys.iterator();
 
                 while(keyIterator.hasNext()){
                     SelectionKey key = keyIterator.next();
                     if(key.isAcceptable()){
-
-                        SocketChannel   client = welcomeSocket.accept();
-                                        client.configureBlocking(false);
-                                        client.register(selector, SelectionKey.OP_READ, new Session());
+                        SocketChannel   clientChannel = welcomeSocket.accept();
+                                        clientChannel.configureBlocking(false);
+                                        clientChannel.register(selector, SelectionKey.OP_READ, new Session());
                     }
                     else if(key.isReadable()){
                         handleRead(key,selector);
@@ -85,13 +84,6 @@ public class ServerMain {
                 }
             }
 
-            /* Testing
-            try{
-                Thread.sleep(6000);
-            }catch( InterruptedException e){
-                e.printStackTrace();
-            */
-
         } catch(IOException e) { 
             e.printStackTrace();
         }
@@ -99,13 +91,17 @@ public class ServerMain {
     }
 
     private static void handleWrite(SelectionKey key) {
+        System.out.println("SELECTOR WRITING");
         //ho gia wrappato il messaggio nel buffer
         SocketChannel client = (SocketChannel) key.channel();
         Session session = (Session) key.attachment();
         ClientBuffer response_buffer = session.getBuffer();
-
         try{
-            response_buffer.writeTo(client);
+            if(response_buffer.writeTo(client)){
+                //response_buffer.reset();
+                System.out.println("SELECTOR WRITING DONE");
+                key.interestOps(SelectionKey.OP_READ);
+            }
         } catch(Exception e){
             key.cancel();
             e.printStackTrace();
@@ -114,11 +110,6 @@ public class ServerMain {
             } catch(IOException e1){
                 e1.printStackTrace();
             }
-        }
-
-        //se la scrittura è finita;
-        if(response_buffer.isEmpty()){
-            key.interestOps(SelectionKey.OP_READ);
         }
         
     }
@@ -132,22 +123,26 @@ public class ServerMain {
         ClientBuffer request_buffer = session.getBuffer();
 
         try{
-            request_buffer.readFrom(client);
-
-            if(request_buffer.isFull()){
+            System.out.println("SELECTOR READING");
+            if(request_buffer.readFrom(client)){
+                System.out.println("SELECTOR READING DONE");
                 try{
                     ServerContext.MainPool.submit(new RequestHandler(key));
                 } catch(RejectedExecutionException e){
+                    e.printStackTrace();
                     key.cancel();
                     client.close();
                 } catch(NullPointerException e){
                     e.printStackTrace();
+                    key.cancel();
+                    client.close();
                 }
             }
 
         } catch(Exception e){
+            //e.printStackTrace();
             key.cancel();
-            e.printStackTrace();
+            //e.printStackTrace();
             try{
                 client.close();
             } catch(IOException e1){
@@ -157,6 +152,10 @@ public class ServerMain {
     }
 
     public static void main(String[] args) {
+        /*
+        for(String s : args)
+        System.out.println(s);
+        */
         run();
     }
 

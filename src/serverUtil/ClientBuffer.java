@@ -3,179 +3,102 @@ package serverUtil;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
-import java.nio.channels.NotYetConnectedException;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 public class ClientBuffer {
-    private Integer     capacity;
-    private int         limit;
-    private ByteBuffer  data;
-    private boolean     full;
-
-    //penso di potermi arrangiatre anche senza limit e full;
-
-    private final int Max_Capacity;
-    private static final int MAX_DEFAULT = 8192;
+    private ByteBuffer buffer;
+    private ByteBuffer sizeBuffer;
+    
+    private static final int MAX_DEFAULT = 2048;
+    private final int size;
 
     public ClientBuffer(int max){
-        this.capacity = null;
-        this.data = null;
-        this.full = false;
-        this.Max_Capacity = max;
+        buffer = ByteBuffer.allocateDirect(max);
+        sizeBuffer = ByteBuffer.allocate(Integer.BYTES);
+        size = max;
     }
 
     public ClientBuffer(){
         this(MAX_DEFAULT);
     }
 
-
-    protected void initializeRead(SocketChannel client) throws Exception{
-        //inizializza il buffer alla dimensione del primo intero letto
-        ByteBuffer size = ByteBuffer.allocate(Integer.BYTES);
-
-        try {
-            int bytes_read = client.read(size);
-
-            if(bytes_read == -1){
+    /*
+     * Function to read from a socket channel, reads up to "toRead" bytes
+     * calls readInit if toRead is 0 returns true if finished reading;
+     * buffer has always remaining since im preallocating that so im using toRead
+     */
+    public boolean readFrom(SocketChannel client) throws Exception {
+        if(sizeBuffer.hasRemaining()){
+            if(client.read(sizeBuffer) == -1)   
                 throw new ClosedChannelException();
-            }
-
-            if(bytes_read != Integer.BYTES){
-                throw new Exception("Error reading the size of the request");   
-            }
-
-            size.flip();
-
-            this.capacity = size.getInt();
-            this.limit = 0;
-
-            if(capacity > Max_Capacity){
-                throw new Exception("Request too big");
-            }
-
-            this.data = ByteBuffer.allocate(this.capacity);
-        } catch(NotYetConnectedException e){
-            //non dovrebbe accadere
-            e.printStackTrace();
-        } catch(IOException e){
-            throw new Exception("Error when elaborating request");
+            else if(sizeBuffer.hasRemaining())   
+                return false;
+            sizeBuffer.flip();
+            int length = sizeBuffer.getInt();
+            if(length > size)   
+                throw new Exception("Packet too big");
+            buffer.clear();
+            buffer.limit(length);
         }
-
-    }
-
-    public boolean isFull(){
-        return full;
-    }
-
-    public boolean isEmpty(){
-        return full;
-    }
-
-    public int capacity(){
-        return capacity;
-    }
-
-    public int leftToRead(){
-        return capacity - limit;
-    }
-
-    public boolean readFrom(SocketChannel client) throws Exception{
-        if(capacity == null) 
-            initializeRead(client);
-
-        //dopo che si è inizializzato si inizia a leggere il contenuto della richiesta
-        if(!full){
-
-            int size = client.read(data);
-
-            if(size == -1){
-                throw new ClosedChannelException();
-            }
-
-            //dopo che si è letto si aggiunge la quantità letta a quella totale
-            limit += size;
-
-            //se si è letto tutto il buffer si setta ready a true
-            if(limit == capacity){
-                full = true;
-            }
-
-        }
-
-        return full;
-
-    }
-
-    public ByteBuffer getData(){
-        data.position(0);
-        return data;
-    }
-
-    public String getStringData() {
-        // Create a copy of the buffer to avoid altering the original position
-        ByteBuffer bufferCopy = data.duplicate();
-        
-        // Prepare the buffer for reading from the start
-        bufferCopy.position(0);
-        
-        // Convert ByteBuffer content to a String using UTF-8 charset
-        Charset charset = StandardCharsets.UTF_8;
-        return charset.decode(bufferCopy).toString();
-    }
-
-    public void reset(){
-        capacity = null;
-        limit = 0;
-        data = null;
-        full = false;
-    }
-
-    public void wrapMessage(byte[] message){
-        reset();
-        ByteBuffer payload = ByteBuffer.wrap(message);
-        this.capacity = null;
-        this.data = payload;
-        this.limit = 0;
-        this.full = false;
-    }
-
     
-    protected void initializeWrite(SocketChannel client)throws Exception{
-        //viene chiamato quando si vuole scrivere. Setta la capacità del buffer a 0 scrivendo sulla socket 
-        //la dimensione del payload
-
-        //write payload size in socketchannel;
-
-        ByteBuffer size = ByteBuffer.allocate(Integer.BYTES);
-        this.capacity = data.capacity();
-
-        client.write(size.putInt(this.capacity));
-
+        if(client.read(buffer) == -1)
+            throw new ClosedChannelException();
+        else if(!buffer.hasRemaining()){
+            buffer.flip();
+            /*
+             * IL CLEAR DEL BUFFER E' IMPORTANTE CHE STIA QUI
+             */
+            sizeBuffer.clear();
+            return true;
+        }
+        return false;
     }
 
-    //alternativamente potevo usare 
-    public boolean writeTo(SocketChannel client) throws Exception{
-        if(capacity == null){
-            initializeWrite(client);
-        }
-        if(!full){
-            int size = client.write(data);
+    /*
+     * Function that gets data from the buffer and converts it into a string
+     */
+    public String getString(){
+        byte[] data = new byte[buffer.remaining()];
+        buffer.get(data);
+        buffer.clear();
+        return new String(data);
+    }
 
-            if(size == -1){
+    /*
+     * Function to write to a socket channel, first writes 4 bytes for 
+     * packet length with "writeInit" 
+     * Write init returns true when sizeBuffer is empty else returns false
+     * 
+     * after that attempts to write till the buffer is empty
+     */
+    
+    public boolean writeTo(SocketChannel client) throws IOException {
+        //inserisce la lunghezza del pacchetto
+        if(sizeBuffer.hasRemaining()){
+            if(client.write(sizeBuffer) == -1){
                 throw new ClosedChannelException();
             }
-
-            limit += size;
-            
-            if(limit == capacity){
-                full = true;
+            else if(sizeBuffer.hasRemaining()){
+                return false;
             }
-
+            sizeBuffer.clear();
         }
+        //inserisce il pacchetto
+        if(client.write(buffer)== -1) throw new ClosedChannelException();
+        else if(buffer.hasRemaining()) return false;
+        buffer.clear();
+        return true;
+    }
 
-        return full;
+    public void wrapString(String data){
+        byte[] dataBytes = data.getBytes();
+        sizeBuffer.clear();
+        sizeBuffer.putInt(dataBytes.length);
+        sizeBuffer.flip();
+        buffer.put(dataBytes);
+        buffer.limit(dataBytes.length);
+        buffer.flip();
     }
 
 }
+
