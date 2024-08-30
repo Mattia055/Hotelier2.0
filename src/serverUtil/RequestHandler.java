@@ -97,7 +97,7 @@ public class RequestHandler implements Runnable{
         
         try{
             System.out.println("HANDLING REQUEST");
-            String str = buffer.getString();
+            String str = buffer.extractString();
             Request requestObject = Gson.fromJson(str, RequestT);
             //resetto il buffer
             BiFunction<Request,Session,Response> handler = HandlerTable.get(requestObject.getMethod());

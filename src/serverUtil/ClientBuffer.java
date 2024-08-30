@@ -10,10 +10,13 @@ public class ClientBuffer {
     private ByteBuffer sizeBuffer;
     
     private static final int MAX_DEFAULT = 2048;
+    private static final BufferPool pool = new BufferPool(10, 10);
     private final int size;
 
+    
+
     public ClientBuffer(int max){
-        buffer = ByteBuffer.allocateDirect(max);
+        buffer = null;
         sizeBuffer = ByteBuffer.allocate(Integer.BYTES);
         size = max;
     }
@@ -35,9 +38,14 @@ public class ClientBuffer {
                 return false;
             sizeBuffer.flip();
             int length = sizeBuffer.getInt();
+            System.out.println("length: "+length);
             if(length > size)   
                 throw new Exception("Packet too big");
+            buffer = pool.get(length);
+            
+            System.out.println("length: "+length);
             buffer.clear();
+            System.out.println("Capacity: "+buffer.capacity());
             buffer.limit(length);
         }
     
@@ -57,10 +65,9 @@ public class ClientBuffer {
     /*
      * Function that gets data from the buffer and converts it into a string
      */
-    public String getString(){
+    public String extractString(){
         byte[] data = new byte[buffer.remaining()];
         buffer.get(data);
-        buffer.clear();
         return new String(data);
     }
 
@@ -95,6 +102,7 @@ public class ClientBuffer {
         sizeBuffer.clear();
         sizeBuffer.putInt(dataBytes.length);
         sizeBuffer.flip();
+        buffer = pool.get(dataBytes.length);
         buffer.put(dataBytes);
         buffer.limit(dataBytes.length);
         buffer.flip();
