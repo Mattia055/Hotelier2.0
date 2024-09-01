@@ -1,5 +1,6 @@
 package lib.client.api;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 
 
@@ -57,7 +58,7 @@ public class APIResponse {
             //API error
             throw new IllegalArgumentException("Error not mapped to a status");
         }
-        this.message = status.getPhrase() + " : " + message;
+        
         this.data = data;
     }
 
@@ -81,6 +82,10 @@ public class APIResponse {
         this(Error, null, null);
     }
 
+    protected void setMessage(){
+        this.message = status.getPhrase() + " : " + message;
+    }
+
     /**
      * Gets the status of the API response.
      * 
@@ -97,6 +102,12 @@ public class APIResponse {
      */
     protected void setStatus(Status status) {
         this.status = status;
+        setMessage();
+    }
+
+    protected void setStatus(Error error){
+        this.status = statusMapping.get(error);
+        setMessage();
     }
 
     /**
@@ -135,10 +146,10 @@ public class APIResponse {
         this.data = data;
     }
 
-
-    public HotelDTO[] getHotelList() {
+    @SuppressWarnings("unchecked")
+    public ArrayList<HotelDTO> getHotelList() {
         try{
-            return (HotelDTO[]) data;
+            return (ArrayList<HotelDTO>) data;
         } catch (ClassCastException e){
             return null;
         }
@@ -160,6 +171,7 @@ public class APIResponse {
      * 
     */
     @Override
+    @SuppressWarnings("unchecked")
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("APIResponse{\n" +
@@ -174,6 +186,9 @@ public class APIResponse {
             for (HotelDTO hotel : hotels) {
                 sb.append(hotel.toString() + "\n");
             }
+        }
+        else if(data instanceof HotelDTO){
+            sb.append(((HotelDTO) data).toString());
         }
         else sb.append("null\n}");
         return sb.toString();

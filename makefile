@@ -102,5 +102,5 @@ runClient: $(CLIENT_JAR)
 	@java -jar $(CLIENT_JAR) || true
 
 clear: 
-	rm -rf $(CLASS) $(EXTRACT_DIR ) $(SERVER_JAR) $(CLIENT_JAR) data/users.json
+	rm -rf $(CLASS) $(EXTRACT_DIR ) $(SERVER_JAR) $(CLIENT_JAR) data/users.json data/*tmp
 	clear

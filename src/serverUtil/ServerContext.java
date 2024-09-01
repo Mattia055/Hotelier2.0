@@ -62,13 +62,18 @@ public class ServerContext {
     // Parametri per i thread pool schedulati
     protected static ScheduledExecutorService   RankingPool;
     protected static ScheduledExecutorService   FileHandlerPool;
-    private static ArrayList<ScheduledFuture<?>> ScheduledTasks;
+    private  static ArrayList<ScheduledFuture<?>> ScheduledTasks;
     private static int FILE_POOL_CORESIZE = 3;
     private static long SAVE_INIT   = 1000;
     private static long RANK_INIT   = 1000;
     private static long SAVE_DELAY  = 10000;
     private static long RANK_DELAY  = 10000;
     private static final TimeUnit TIME_DELAY = TimeUnit.MILLISECONDS;
+
+    //Parametri per il BufferPool e packetLength
+    protected static int PACKET_LENGTH = 2048;
+    protected static int BUFFER_POOL_SIZE = 10;
+    protected static int ALLOC_TRESHOLD = 10;
 
     // Parametri per i percorsi dei file
     protected static String Hotelsfrom  = null;
@@ -179,6 +184,9 @@ public class ServerContext {
         Usersfrom           = loadArg.getStringAttribute("usersfrom", Usersfrom);
         MAX_DUMP            = loadArg.getIntAttribute   ("max_dump", MAX_DUMP);
         DUMP_WAIT           = loadArg.getLongAttribute  ("dump_wait", DUMP_WAIT);
+        PACKET_LENGTH       = loadArg.getIntAttribute   ("packet_length", PACKET_LENGTH);
+        BUFFER_POOL_SIZE    = loadArg.getIntAttribute   ("buffer_pool_size", BUFFER_POOL_SIZE);
+        ALLOC_TRESHOLD      = loadArg.getIntAttribute   ("alloc_treshold", ALLOC_TRESHOLD);
 
 
         // Verifica la validità degli attributi

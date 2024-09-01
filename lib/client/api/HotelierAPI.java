@@ -9,6 +9,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import lib.share.packet.Request;
@@ -16,6 +17,8 @@ import lib.share.packet.Response;
 import lib.share.packet.Request.Method;
 import lib.share.struct.HotelDTO;
 import lib.share.struct.Score;
+import lib.share.typeAdapter.RequestTypeAdapter;
+import lib.share.typeAdapter.ResponseTypeAdapter;
 
 public class HotelierAPI {
 
@@ -29,20 +32,25 @@ public class HotelierAPI {
     private static final Type ResponseT;
     private static final Type ScoreT;
     private static final Type HotelDTOListT;
+    private static final Type HotelDTOT;
+    private boolean fetch_init = false;
 
     static{
         RequestT        = new TypeToken<Request>(){}.getType();
         ResponseT       = new TypeToken<Response>(){}.getType();
         ScoreT          = new TypeToken<Score>(){}.getType();
+        HotelDTOT       = new TypeToken<HotelDTO>(){}.getType();
         HotelDTOListT   = new TypeToken<HotelDTO[]>(){}.getType();
-
-
     }
     
     public HotelierAPI(String serverAddress, int serverPort) {
         this.serverAddress = serverAddress;
         this.serverPort = serverPort;
-        this.gson = new Gson();
+        this.gson = new  GsonBuilder()
+                        .serializeNulls()
+                        //.registerTypeAdapter(Request.class,new RequestTypeAdapter())
+                        .registerTypeAdapter(Response.class,new ResponseTypeAdapter())
+                        .create();
     }
 
     public void connect() throws ConnectionException {
@@ -107,14 +115,14 @@ public class HotelierAPI {
 
 
     private void sendRequest(Request request) throws CommunicationException {
-        String jsonString = gson.toJson(request, RequestT);
+        String jsonString = gson.toJson(request, Request.class);
         write(jsonString);
     }
 
     private Response getResponse() throws CommunicationException, ResponseParsingException {
         String jsonString = read();
         try {
-            return gson.fromJson(jsonString, ResponseT);
+            return gson.fromJson(jsonString, Response.class);
         } catch (Exception e) {
             throw new ResponseParsingException("Failed to parse response from server", e);
         }
@@ -241,57 +249,51 @@ public class HotelierAPI {
     public APIResponse HotelSearch(String City, String Hotel) throws CommunicationException, ResponseParsingException {
         /*API call to search for a hotel */
         Request request = new Request(Method.SEARCH_HOTEL, new String[]{City,Hotel});
+        System.out.println("CLASS NAME: " + request.getData().getClass().getSimpleName());
         sendRequest(request);
         Response response = getResponse();
         return response.getStatus() == Response.Status.FAILURE ? 
                                         new APIResponse(response.getError()) : 
-                                        new APIResponse(Status.OK, new String[]{(String) response.getData()});  
+                                        new APIResponse(Status.OK, (HotelDTO) response.getData()  );  
     }
 
     //public APIResponse HotelsFetch
     public APIResponse HotelsFetch(String City) throws CommunicationException, ResponseParsingException, NullPointerException {
-        if(City == null) throw new NullPointerException();
+        if(City != null) fetch_init = true;
+        
         /*API call to fetch hotels */
         Request request = new Request(Method.SEARCH_ALL, City);
         sendRequest(request);
         Response response = getResponse();
-
-        if(response.getStatus() == Response.Status.FAILURE){
-            return new APIResponse(response.getError());
+        APIResponse apiResponse = new APIResponse(Status.OK);
+        Response.Status res = response.getStatus();
+        if(res == Response.Status.FAILURE){
+           apiResponse.setStatus(response.getError());
+           return apiResponse;
         }
-        return new APIResponse( response.getStatus() == Response.Status.SUCCESS ? 
-                                Status.FETCH_DONE : Status.FETCH_LEFT,
-                                (Object) gson.fromJson((String) response.getData(), HotelDTOListT));
+        else if(res == Response.Status.SUCCESS){
+            fetch_init = false;
+            apiResponse.setStatus(Status.FETCH_DONE);
+        }
+        else{
+            apiResponse.setStatus(Status.FETCH_LEFT);
+        }
+        apiResponse.setData(response.getData());
+
+        return apiResponse;
     }
 
     /*Il metodo può essere chiamato solo se il metodo precedentemente invocato è HotelsFetch(City)*/
     
     public APIResponse HotelsFetch() throws CommunicationException, ResponseParsingException, InvalidMethodInvocation {
-        //API call to fetch all hotels
-        Request request = new Request(Method.SEARCH_ALL, null);
-        sendRequest(request);
-        Response response = getResponse();
-
-        // search all può dare solo FAILURE a causa di
-        // * BAD-SESSION in questo caso restituisce ServerError
-        // * INVALID REQUEST in questo caso lancia InvalidMethodInvocation
-        
-        if( response.getStatus() == Response.Status.FAILURE ){
-            if(response.getError() == Response.Error.BAD_SESSION)
-                return new APIResponse(Status.SERVER_ERROR);
-
-            else throw new InvalidMethodInvocation("Invoked HotelsFetch() and last method was not HotelsFetch(City) or HotelsFetchAll(City) fetched all hotels");
-        }
-        //non mi interessa controllare success o await input
-        return new APIResponse( response.getStatus() == Response.Status.SUCCESS ? 
-                                Status.FETCH_DONE : Status.FETCH_LEFT,
-                                (Object) gson.fromJson((String) response.getData(), HotelDTOListT));
+        if(!fetch_init) throw new InvalidMethodInvocation("Invoked HotelsFetch() and last method was not HotelsFetch(City) or HotelsFetchAll(City) fetched all hotels");
+        return HotelsFetch(null);
     }
     
-
-    public APIResponse HotelsFetchAll(String City) throws CommunicationException, ResponseParsingException, NullPointerException {
-        /*API call to fetch all hotels */
-        /*Calls internally HotelsFetch(String || void) */
+    
+    /*public APIResponse HotelsFetchAll(String City) throws CommunicationException, ResponseParsingException, NullPointerException {
+        //API call to fetch all hotels 
+        //Calls internally HotelsFetch(String || void) 
         APIResponse response = HotelsFetch(City);
         //se la prima risposta da errore allora restituisco errore
         if(response.getStatus() == Status.NO_SUCH_CITY) return response;
@@ -307,14 +309,41 @@ public class HotelierAPI {
                 response = HotelsFetch();
             }
         } catch(Exception e){
+            e.printStackTrace();
             //potrebbe essere Communication Exception o ResponseParsingException
-            /*A me non interessa più di tanto perche se il primo ciclo while viene preso posso restituire 
-             * FETCH_PARTIAL. Il primo ciclo while va sempre bene altrimenti non sarei qui
-             */
+            //A me non interessa più di tanto perche se il primo ciclo while viene preso posso restituire 
+            //FETCH_PARTIAL. Il primo ciclo while va sempre bene altrimenti non sarei qui
+             
         }
 
         return new APIResponse(Status.FETCH_PARTIAL, hotels.toArray(new HotelDTO[0]));
     }
+    */
+
+    public APIResponse HotelsFetchAll(String City) throws CommunicationException, ResponseParsingException, NullPointerException {
+        APIResponse response = HotelsFetch(City);
+        if(response.getStatus() == Status.NO_SUCH_CITY) return response;
+        ArrayList<HotelDTO> hotels = new ArrayList<HotelDTO>();
+        boolean success = false;
+        try{
+            while(response.getStatus() == Status.FETCH_LEFT){
+                hotels.addAll(response.getHotelList());
+                response = HotelsFetch();
+            }
+
+            if(response.getStatus() == Status.FETCH_DONE){
+                hotels.addAll(response.getHotelList());
+                success = true;
+            }
+
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+
+        return new APIResponse(success ? Status.FETCH_DONE : Status.FETCH_PARTIAL, hotels.toArray(new HotelDTO[0]));
+        //Alla fine aggiungo il gruppo degli Hotel rimanenti
+    }
+
 
     
 

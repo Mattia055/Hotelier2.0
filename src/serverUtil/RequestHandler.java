@@ -20,12 +20,11 @@ import lib.share.packet.Response.Status;
 import lib.share.packet.Response.Error;
 import lib.share.struct.HotelDTO;
 import lib.share.struct.Score;
+import lib.share.typeAdapter.RequestTypeAdapter;
+import lib.share.typeAdapter.ResponseTypeAdapter;
 
 public class RequestHandler implements Runnable{
 
-    private static final Type RequestT;
-    private static final Type ResponseT;
-    private static final Type HotelDTOT;
     private static final Type HotelDTOListT;
     private static final Type ScoreT;
 
@@ -43,12 +42,13 @@ public class RequestHandler implements Runnable{
 
     static{
 
-        RequestT        = new TypeToken<Request>(){}.getType();
-        ResponseT       = new TypeToken<Response>(){}.getType();
-        HotelDTOT       = new TypeToken<Hotel>(){}.getType();
         HotelDTOListT   = new TypeToken<ArrayList<Hotel>>(){}.getType();
         ScoreT          = new TypeToken<Score>(){}.getType();
-        Gson            = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+        Gson            = new   GsonBuilder()
+                                .serializeNulls()
+                                .registerTypeAdapter(Request.class,new RequestTypeAdapter())
+                                .registerTypeAdapter(Response.class,new ResponseTypeAdapter())
+                                .create();
 
         HandlerTable = new EnumMap<>(Request.Method.class);
 
@@ -73,7 +73,8 @@ public class RequestHandler implements Runnable{
         LoggedTable     = ServerContext.LoggedTable;
 
         //inizializzazione del batch size
-        DEF_BATCH_SIZE = ServerContext.MAX_BATCH_SIZE;
+        //DEF_BATCH_SIZE = ServerContext.MAX_BATCH_SIZE;
+        DEF_BATCH_SIZE = 1;
 
 
 
@@ -81,14 +82,12 @@ public class RequestHandler implements Runnable{
 
     private SelectionKey    key;
     private Session         session;
-    private ClientBuffer    buffer;
 
     public RequestHandler(SelectionKey key) {
 
         //della chiave mi servono canale, sessione;
         this.key        = key;
         this.session    = (Session) key.attachment();
-        this.buffer     = session.getBuffer();
 
     }
 
@@ -97,14 +96,13 @@ public class RequestHandler implements Runnable{
         
         try{
             System.out.println("HANDLING REQUEST");
-            String str = buffer.extractString();
-            Request requestObject = Gson.fromJson(str, RequestT);
+            Request requestObject = Gson.fromJson(session.getMessage(), Request.class);
+            System.out.println(requestObject.getMethod().name());
             //resetto il buffer
             BiFunction<Request,Session,Response> handler = HandlerTable.get(requestObject.getMethod());
             Response response = (handler != null) ? handler.apply(requestObject, session) : new Response(Error.INVALID_REQUEST);
             //System.out.println("Risposta pronta");
-            buffer.wrapString(Gson.toJson(response,ResponseT));
-            System.out.println("FINISHED HANDLING");
+            session.setMessage(Gson.toJson(response,Response.class));
             key.interestOps(SelectionKey.OP_WRITE);
             /*
              * chiamare wakeup sul selettore è per evitare la
@@ -199,6 +197,7 @@ public class RequestHandler implements Runnable{
                 //non so se funziona il fast circuit
                 password_status = true;
                 if(LoggedTable.putIfAbsent(session.Username,true) == null){
+                    session.clearMethod();
                     return new Response(Status.SUCCESS);
                 }
                 //utente gia presente o gia loggato o qualunque altra cosa
@@ -274,36 +273,22 @@ public class RequestHandler implements Runnable{
         else return new Response(Error.NO_SUCH_USER);
 
     }
-    
+
     public static Response handleSearch(Request request, Session session) {
         /*
-         * Due passaggi:
-         * riceve città e mette nella sessione (Session.Data)
-         * 
-         * Riceve nome hotel e mette nella sessione
-         * nel caso uno dei due non esista,setta il metodo a 
-         * null e ricomincia
+         * Un passaggio, riceve un Array con citta e hotel, se uno dei due non esiste
+         * restituisce errore specifico altrimenti restituisce l'hotel
          */
-        if(session.LastMethod == Method.SEARCH_HOTEL){
-            //effettua il casting a stringa della città () e cerca nella tabella hash
-            //L'hotel, prima lo rende case insensitive
-            String city     = (String) session.getData();
-            String hotel    = ((String)request.getData()).toLowerCase().trim();
-            
-            //trova l'hotel, lo converte a JSON per portabilità e lo invia
-            Hotel h = HotelsTable.get(city).get(hotel);
-            return h != null?   new Response(Status.SUCCESS,Gson.toJson(h.toDTO(),HotelDTOT)) : 
-                                new Response(Error.NO_SUCH_HOTEL);
-        }
-
-        //controllo se la città esiste
-        String city = ((String)request.getData()).toLowerCase().trim();
-        if(HotelsTable.get(city) != null){
-            session.setData(city);
-            session.setMethod(Method.SEARCH_HOTEL);
-            return new Response(Status.AWAIT_INPUT);
-        }
-        else return new Response(Error.NO_SUCH_CITY);
+        
+        String[] response = (String[]) request.getData();
+        String city = response[0].toLowerCase().trim();
+        String hotel = response[1].trim();
+        
+        ConcurrentHashMap<String,Hotel> hmap = HotelsTable.get(city);
+        if(hmap == null) return new Response(Error.NO_SUCH_CITY);
+        Hotel h = hmap.get(hotel);
+        if(h != null) return new Response(Status.SUCCESS,h.toDTO());
+        return new Response(Error.NO_SUCH_HOTEL);
 
     }
     
@@ -324,22 +309,32 @@ public class RequestHandler implements Runnable{
         Iterator<Hotel>  iterator   = null;
         ArrayList<HotelDTO> batch      = null;
 
+        /*
+         * First Invocation
+         */
         if(session.LastMethod != Method.SEARCH_ALL){
+            //read request data (If Last Method not cached then need data to be Ciaty)
             if(request.getData() == null) return new Response(Error.INVALID_REQUEST);
-            //inizializzo l'iteratore
+            
             String city = ((String)request.getData()).toLowerCase().trim();
             if(HotelsTable.get(city) == null) return new Response(Error.NO_SUCH_CITY);
+            //Initialize iterator on hashmap values
             iterator = HotelsTable.get(city).values().iterator();
+            //Initialize batch list
+
+            //dont know if its gonna be full
             batch = new ArrayList<HotelDTO>(DEF_BATCH_SIZE);
+            //Initialize session with method
             session.setMethod(Method.SEARCH_ALL);
         }
         
         
-        //istanzio l'iteratore della collezione nella sessione
         /*
-        * Devo controllare che l'iteratore sia di tipo Hotel
-        */
+         * Subsequent Invocations, getting the iterator from session data
+         */
         else{
+
+            //checking if I can cast to Hotel Iterator
             Iterator<?>  GenericIterator = (Iterator<?>) session.getData();
             Object nextElement = GenericIterator.next();
             if(!(nextElement instanceof Hotel)){
@@ -349,35 +344,42 @@ public class RequestHandler implements Runnable{
             }
             iterator = (Iterator<Hotel>) GenericIterator;
 
+            //adding the first element to the batch
             batch = new ArrayList<HotelDTO>(DEF_BATCH_SIZE){{
                 add(((Hotel) nextElement).toDTO());
             }};  
         }
         
-        boolean finished = true;
-        for(int i = batch.size(); i <= DEF_BATCH_SIZE ; i++){
-            if(iterator.hasNext()) batch.add(iterator.next().toDTO());
+        boolean finished = false;
+        for(int i = batch.size(); i < DEF_BATCH_SIZE ; i++){
+            //If iterator has next then I add the element to the batch
+            if(iterator.hasNext()) 
+                batch.add(iterator.next().toDTO());
             else{
+                finished = true;
+                break;
+                /* 
                 session.clearMethod();
                 session.clearData();
-                finished = false;
+                finished = true;
                 break;
+                */
             }
         }
-
-        //Directly implemented in the first loop
         /*
-        List<HotelDTO> DTObatch =  batch.stream()
-                                        .map(Hotel::toDTO)
-                                        .collect(Collectors.toList());
-        */
-        /*
-        ArrayList<HotelDTO> DTObatch = new ArrayList<HotelDTO>();
-        for(Hotel h : batch){
-            DTObatch.add(h.toDTO());
-        */
-
-        return new Response(finished ? Status.SUCCESS : Status.AWAIT_INPUT,Gson.toJson(batch,HotelDTOListT));
+         * Double check to see if the iterator (after the batch size) is done
+         * or its finished during batch insertion
+         */
+        if(finished || !iterator.hasNext()){
+            session.clearMethod();
+            session.clearData();
+            return new Response(Status.SUCCESS,batch);
+        }
+        else{
+            //cache te iterator for future reuse
+            session.setData(iterator);
+            return new Response(Status.AWAIT_INPUT,batch);
+        }
 
     }
     

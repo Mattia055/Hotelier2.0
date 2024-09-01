@@ -9,13 +9,11 @@ public class ClientMain {
         HotelierAPI api = new HotelierAPI("localhost",7284);
         try{
         api.connect();
-        for(int i = 0; i < 100000; i++){
-            APIResponse response = api.UserRegister("Mattia055", "CIAO");
-            response = api.UserLogin("Mattia055", "CIAO");
-            System.out.println(response.toString());
-            response = api.UserLogout();
-            System.out.println(response.toString());
-        }
+        APIResponse response = api.HotelSearch("Firenze", "Hotel Firenze 1");
+        System.out.println(response.toString());
+        response = api.HotelsFetchAll("Firenze");
+        System.out.println(response.toString());
+        
         } catch(APIException e){
             e.printStackTrace();
         }

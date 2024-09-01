@@ -95,9 +95,8 @@ public class ServerMain {
         //ho gia wrappato il messaggio nel buffer
         SocketChannel client = (SocketChannel) key.channel();
         Session session = (Session) key.attachment();
-        ClientBuffer response_buffer = session.getBuffer();
         try{
-            if(response_buffer.writeTo(client)){
+            if(session.writeTo(client)){
                 //response_buffer.reset();
                 System.out.println("SELECTOR WRITING DONE");
                 key.interestOps(SelectionKey.OP_READ);
@@ -120,11 +119,9 @@ public class ServerMain {
     private static void handleRead(SelectionKey key,Selector selector) {
         SocketChannel client = (SocketChannel) key.channel();
         Session session = (Session) key.attachment();
-        ClientBuffer request_buffer = session.getBuffer();
-
         try{
             System.out.println("SELECTOR READING");
-            if(request_buffer.readFrom(client)){
+            if(session.readFrom(client)){
                 System.out.println("SELECTOR READING DONE");
                 try{
                     ServerContext.MainPool.submit(new RequestHandler(key));

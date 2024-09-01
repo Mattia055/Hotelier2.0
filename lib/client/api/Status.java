@@ -5,7 +5,7 @@ import lib.share.packet.Response.Error;
 public enum Status {
         OK              ("The operation was successful"),
         NO_SUCH_USER    (Error.NO_SUCH_USER.getMnemonic()),
-        BAD_PASSWORD    (Error.BAD_PASSWD.getMnemonic()),
+        BAD_PASSWORD    (Error.BAD_PASSWD.getMnemonic() ),
         USER_EXISTS     (Error.USER_EXISTS.getMnemonic()),
         MUST_LOGIN      (Error.MUST_LOGIN.getMnemonic()),
         NO_SUCH_CITY    (Error.NO_SUCH_CITY.getMnemonic()),

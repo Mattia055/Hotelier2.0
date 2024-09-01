@@ -1,4 +1,17 @@
 package lib.share.packet;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.TypeAdapter;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+
+import lib.share.struct.HotelDTO;
 import lib.share.struct.Score;
 
 /**
@@ -73,7 +86,7 @@ public class Response {
      * @param error The error code associated with the response.
      * @param Data The additional data to include with the response.
      */
-    private Response(Status status, Error error, Object Data) {
+    public Response(Status status, Error error, Object Data) {
         if (status == Status.FAILURE && error == Error.NO_ERR) {
             throw new IllegalArgumentException("Response Status.FAIL and no error set");
         }
@@ -87,7 +100,7 @@ public class Response {
         this(status, Error.NO_ERR, null);
     }
 
-    public Response(Status status, String Data) {
+    public Response(Status status, Object Data) {
         this(status, Error.NO_ERR, Data);
     }
 
@@ -95,7 +108,7 @@ public class Response {
         this(Status.FAILURE, error, null);
     }
 
-    public void update(Status status, Error error, String Data) {
+    public void update(Status status, Error error, Object Data) {
         if (status != Status.FAILURE && error == Error.NO_ERR) {
             throw new IllegalArgumentException("Response Status.FAIL and no error set");
         }
@@ -105,7 +118,7 @@ public class Response {
         this.payload = (error != Error.NO_ERR) ? null : Data;
     }
 
-    public void update(Status status, String Data) {
+    public void update(Status status, Object Data) {
         update(status, Error.NO_ERR, Data);
     }
 
@@ -139,4 +152,5 @@ public class Response {
     public Object getData() {
         return payload;
     }
+
 }
