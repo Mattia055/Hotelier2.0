@@ -18,7 +18,6 @@ import lib.share.packet.Response.Status;
 import lib.share.struct.HotelDTO;
 
 public class ResponseTypeAdapter extends TypeAdapter<Object> {
-    private ResponseTypeAdapter instance = null;
     private Gson gson;
 
     private Type HotelDTOT;
@@ -31,7 +30,7 @@ public class ResponseTypeAdapter extends TypeAdapter<Object> {
 
         gson = new Gson();
         HotelDTOT       = new TypeToken<HotelDTO>(){}.getType();
-        HotelDTOListT   = new TypeToken<ArrayList<HotelDTO>>(){}.getType();
+        HotelDTOListT   = new TypeToken<HotelDTO[]>(){}.getType();
     }
     //la write va bene
     /*

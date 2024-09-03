@@ -1,6 +1,5 @@
 package serverUtil;
 
-import java.lang.reflect.Type;
 import java.nio.channels.SelectionKey;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,13 +9,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
+import java.util.regex.Pattern;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 import lib.share.packet.*;
 import lib.share.packet.Request.Method;
 import lib.share.packet.Response.Status;
+import lib.share.security.HashUtils;
 import lib.share.packet.Response.Error;
 import lib.share.struct.HotelDTO;
 import lib.share.struct.Score;
@@ -25,25 +26,24 @@ import lib.share.typeAdapter.ResponseTypeAdapter;
 
 public class RequestHandler implements Runnable{
 
-    private static final Type HotelDTOListT;
-    private static final Type ScoreT;
-
     private static Gson     Gson;
     private static final EnumMap<Request.Method,BiFunction<Request,Session,Response>> HandlerTable;
 
     //hashmaps per la gestione delle richieste
     private static ConcurrentHashMap<String,User>                               UsersTable;
-    private static ConcurrentHashMap<String,ConcurrentHashMap<String,Hotel>>    HotelsTable;
-    private static ConcurrentHashMap<Integer, List<Review>>                     ReviewsTable;
+    private static ConcurrentHashMap<String,ArrayList<Hotel>>    HotelsTable;
+    private static ConcurrentHashMap<Integer, ArrayList<Review>>                     ReviewsTable;
     private static ConcurrentHashMap<String,Boolean>                            LoggedTable;
+
+    private static final int SALT_LENGTH;
 
     //parametri per il batch degli hotel
     private static final int DEF_BATCH_SIZE;
 
+    private static final Pattern user_regex;
+
     static{
 
-        HotelDTOListT   = new TypeToken<ArrayList<Hotel>>(){}.getType();
-        ScoreT          = new TypeToken<Score>(){}.getType();
         Gson            = new   GsonBuilder()
                                 .serializeNulls()
                                 .registerTypeAdapter(Request.class,new RequestTypeAdapter())
@@ -73,8 +73,10 @@ public class RequestHandler implements Runnable{
         LoggedTable     = ServerContext.LoggedTable;
 
         //inizializzazione del batch size
-        //DEF_BATCH_SIZE = ServerContext.MAX_BATCH_SIZE;
-        DEF_BATCH_SIZE = 1;
+        DEF_BATCH_SIZE  = ServerContext.MAX_BATCH_SIZE;
+        SALT_LENGTH     = ServerContext.SALT_LENGTH;
+        user_regex  = Pattern.compile(ServerContext.USERNAME_REGEX);
+
 
 
 
@@ -137,340 +139,272 @@ public class RequestHandler implements Runnable{
      * per immagazzinare dati intermedi
      */
 
-    /*
-     * 2 - passaggi:
-     * REGISTER username:
-     * setta la sessione con l'username controllando la validità
-     * - Manda risposta: SUCCESS o USER_TAKEN
-     * 
-     */
-    public static Response handleRegister(Request request, Session session) {
-        //controllo la validità dello username 2 volte
-
-        //secondo passaggio
-        if(session.getMethod() == Method.REGISTER){
-            //inserisco l'utente nella hashTable;
-            String password = (String) request.getData();
-            User u = new User(session.Username,password);
-
-            //effettuo il flush della sessione qualunque cosa succeda
-            /*
-             * se fallimento la procedura deve riniziare
-             * se successo allora non devo mantenere dati dell'utente;
-             */
-            session.flush();
-            if(UsersTable.putIfAbsent(u.username,u) == null){
-                return new Response(Status.SUCCESS);
-            }
-            
-            return new Response(Error.USER_EXISTS);
-        }
-        
-        //controllo se l'utente esiste
-        String username = (String) request.getData();
-        if(UsersTable.get(username) == null){
-            session.Username = username;
-            session.LastMethod = Method.REGISTER;
-            return new Response(Status.AWAIT_INPUT);
-        }
-        else{
-            session.flush();
-            return new Response(Error.USER_EXISTS);
-        }
-
-    }
-    
-    public static Response handleLogin(Request request, Session session) {
-        /*
-         * Due passaggi:
-         * controllo validità username
-         * controllo validità password
-         */
-        if(session.getMethod() == Method.LOGIN){
-            //inserisco l'utente nella hashTable;
-            String password = (String) request.getData();
-            
-            //controllo che la password corrisponda
-            //non devo controllare che il valore sia null (gia fatto)
-            boolean password_status = false;
-            if(UsersTable.get(session.Username).passwordTest(password) == true){
-                //non so se funziona il fast circuit
-                password_status = true;
-                if(LoggedTable.putIfAbsent(session.Username,true) == null){
-                    session.clearMethod();
-                    return new Response(Status.SUCCESS);
-                }
-                //utente gia presente o gia loggato o qualunque altra cosa
-            }
-            //ripulisco la sessione
-            session.flush();
-            return new Response(password_status?
-                                Error.ALREADY_LOGGED : 
-                                Error.BAD_PASSWD);
-        }
-        
-        //controllo se l'utente esiste e se è gia loggato
-        String username = (String) request.getData();
-        if(UsersTable.get(username) != null){
-            if(LoggedTable.get(username) == null) {
-                session.Username = username;
-                session.LastMethod = Method.LOGIN;
-                return new Response(Status.AWAIT_INPUT);
-            }
-            else return new Response(Error.ALREADY_LOGGED);
-        }
-        else return new Response(Error.NO_SUCH_USER);
-
-    }
-    
     public static Response handleLogout(Request request, Session session) {
-        //solo un passaggio
-        /*
-         * se l'utente è loggato allora lo elimino
-         * 
-         * flush della sessione
-         */
-        if(session.Username != null) {
-                     
+        try{
             LoggedTable.remove(session.Username);
-            return new Response(Status.SUCCESS);
-        }
-        else {
-            session.flush();
+        } catch(NullPointerException e){
             return new Response(Error.NOT_LOGGED);
-        }
-    }
-    
-    public static Response handleExtLogout(Request request, Session session) {
-        /*funziona come un login ma nel caso
-         * username e password coincidono allora elimina
-         * la entry dalla tabella loggati;
-         */
-        if(session.getMethod() == Method.EXT_LOGOUT){
-            //inserisco l'utente nella hashTable;
-            String password = (String) request.getData();
-            
-            //controllo che la password corrisponda
-            //non devo controllare che il valore sia null (gia fatto)
-            boolean password_status = false;
-            if(UsersTable.get(session.Username).passwordTest(password) == true){
-                password_status = true;
-                LoggedTable.remove(session.Username);
-            }
-            //ripulisco la sessione
+        } finally{
             session.flush();
-            return password_status? new Response(Status.SUCCESS) :
-                                    new Response(Error.BAD_PASSWD);
         }
-        
-        //controllo se l'utente esiste e se è gia loggato
-        String username = (String) request.getData();
-        if(UsersTable.get(username) != null){
-                session.Username = username;
-                session.LastMethod = Method.EXT_LOGOUT;
-                return new Response(Status.AWAIT_INPUT);
-        }
-        else return new Response(Error.NO_SUCH_USER);
-
-    }
-
-    public static Response handleSearch(Request request, Session session) {
-        /*
-         * Un passaggio, riceve un Array con citta e hotel, se uno dei due non esiste
-         * restituisce errore specifico altrimenti restituisce l'hotel
-         */
-        
-        String[] response = (String[]) request.getData();
-        String city = response[0].toLowerCase().trim();
-        String hotel = response[1].trim();
-        
-        ConcurrentHashMap<String,Hotel> hmap = HotelsTable.get(city);
-        if(hmap == null) return new Response(Error.NO_SUCH_CITY);
-        Hotel h = hmap.get(hotel);
-        if(h != null) return new Response(Status.SUCCESS,h.toDTO());
-        return new Response(Error.NO_SUCH_HOTEL);
-
+        return new Response(Status.SUCCESS);
     }
     
+    public static Response handleSearch(Request request, Session session) {
+        String[] data = (String[]) request.getData();
+        String city = data[0].toLowerCase().trim();
+        String hotel = data[1].trim();
+        
+        ArrayList<Hotel> hmap = HotelsTable.get(city);
+        if(hmap == null) return new Response(Error.NO_SUCH_CITY);
+        synchronized(hmap){
+            for(Hotel h : hmap){
+                if(h.getName().equals(hotel)) return new Response(Status.SUCCESS,h.toDTO());
+            }
+            return new Response(Error.NO_SUCH_HOTEL);
+        }
+    }
+
+    /*
+     * La lista viene restituita al contrario quindi il rank manager deve ordinare
+     * in ordine crescente
+     */
     @SuppressWarnings("unchecked")
     public static Response handleSearchAll(Request request, Session session) {
-        /*
-         * 2 passaggi:
-         * controlla se la città esiste,
-         * se esiste allora invia la lista degli hotel in formato JSON
-         * in batches di DEF_BATCH_SIZE
-         * 
-         * Se è la prima richiesta allora setta il metodo a SEARCH_ALL
-         * e memorizza l'iteratore della collection nella sessione;
-         * 
-         * Se non è la prima richiesta, controlla che il payload sia vuoto e in quel
-         * caso elabora direttamente dalla sessione
-         */
-        Iterator<Hotel>  iterator   = null;
-        ArrayList<HotelDTO> batch      = null;
-
-        /*
-         * First Invocation
-         */
+        ArrayList<HotelDTO> toReturn = null;
         if(session.LastMethod != Method.SEARCH_ALL){
-            //read request data (If Last Method not cached then need data to be Ciaty)
-            if(request.getData() == null) return new Response(Error.INVALID_REQUEST);
-            
-            String city = ((String)request.getData()).toLowerCase().trim();
-            if(HotelsTable.get(city) == null) return new Response(Error.NO_SUCH_CITY);
-            //Initialize iterator on hashmap values
-            iterator = HotelsTable.get(city).values().iterator();
-            //Initialize batch list
-
-            //dont know if its gonna be full
-            batch = new ArrayList<HotelDTO>(DEF_BATCH_SIZE);
-            //Initialize session with method
-            session.setMethod(Method.SEARCH_ALL);
+            String city = ((String) request.getData()).toLowerCase().trim();
+            ArrayList<Hotel> hmap = HotelsTable.get(city);
+            if(hmap == null) return new Response(Error.NO_SUCH_CITY);
+            //creo una copia in locale della lista
+            toReturn = null;
+            synchronized(hmap){
+                toReturn = new ArrayList<HotelDTO>(hmap.size());
+                for(Hotel h : hmap){
+                    System.out.println(h.getName());
+                    toReturn.add(h.toDTO());
+                }
+            }
         }
-        
-        
-        /*
-         * Subsequent Invocations, getting the iterator from session data
-         */
+        //ho cachato la copia quindi posso recuperarla dalla sessione
         else{
-
-            //checking if I can cast to Hotel Iterator
-            Iterator<?>  GenericIterator = (Iterator<?>) session.getData();
-            Object nextElement = GenericIterator.next();
-            if(!(nextElement instanceof Hotel)){
-                session.clearMethod();
-                session.clearData();
-                return new Response(Error.BAD_SESSION);
-            }
-            iterator = (Iterator<Hotel>) GenericIterator;
-
-            //adding the first element to the batch
-            batch = new ArrayList<HotelDTO>(DEF_BATCH_SIZE){{
-                add(((Hotel) nextElement).toDTO());
-            }};  
+            //l'unico caso in cui la sessione contiene un arrayList
+            if((session.getData() instanceof ArrayList<?>)){
+            toReturn = (ArrayList<HotelDTO>) session.getData();
+            } else return new Response(Error.BAD_SESSION);
         }
-        
-        boolean finished = false;
-        for(int i = batch.size(); i < DEF_BATCH_SIZE ; i++){
-            //If iterator has next then I add the element to the batch
-            if(iterator.hasNext()) 
-                batch.add(iterator.next().toDTO());
-            else{
-                finished = true;
+        int last_index = toReturn.size()-1;
+        HotelDTO[] batch = new HotelDTO[DEF_BATCH_SIZE];
+        //restituisco un batch di hotels
+        for(int i = 0; i< DEF_BATCH_SIZE; i++){
+            if(last_index == -1)
                 break;
-                /* 
-                session.clearMethod();
-                session.clearData();
-                finished = true;
-                break;
-                */
-            }
+            batch[i] = toReturn.remove(last_index--);
         }
-        /*
-         * Double check to see if the iterator (after the batch size) is done
-         * or its finished during batch insertion
-         */
-        if(finished || !iterator.hasNext()){
-            session.clearMethod();
+        //se ho finito di inviare tutti gli hotel pulisco la sessione
+        if(last_index == -1){
             session.clearData();
+            session.LastMethod = null;
             return new Response(Status.SUCCESS,batch);
-        }
-        else{
-            //cache te iterator for future reuse
-            session.setData(iterator);
+        } else{
             return new Response(Status.AWAIT_INPUT,batch);
         }
-
+        
     }
-    
-    public static Response handleReview(Request request, Session session) {
-        /*se l'ultimo metodo invocato era REVIEW allora casta session.data a String[]
-         * e inserisce la recensione nella tabella hash effettuando il casting del payload a Score
-        */
-        if(session.LastMethod == Method.REVIEW){
-            
-            Score score     = Gson.fromJson(request.getData().toString(),ScoreT);
-
-            //controllo che i punteggi siano validi
-            if(score.isValidCleaning()) return new  Response(Error.SCORE_CLEANING);
-            if(score.isValidGlobal())   return new  Response(Error.SCORE_GLOBAL);
-            if(score.isValidPosition()) return new  Response(Error.SCORE_POSITION);
-            if(score.isValidPrice())    return new  Response(Error.SCORE_PRICE);
-            if(score.isValidService())  return new  Response(Error.SCORE_SERVICE);
-
-            int user_exp;
-            int hotelID ;
-            try{ 
-                hotelID   = Integer.parseInt(session.getData().toString());
-                user_exp  = UsersTable.get(session.Username).getExperience();
-            }
-            catch(NullPointerException | NumberFormatException e){
-                // session.flush();
-                // non devo fare il flush della sessione
-                /*
-                 * In teoria dovrei gestire il caso in cui l'utente non esiste
-                 * dopo che la procedura di login viene effettuata con successo
-                 */
-                return new Response(e instanceof NullPointerException?
-                                    Error.NO_SUCH_USER:
-                                    Error.BAD_SESSION);
-            }
-
-            Review review   = new Review(hotelID,session.Username,user_exp,LocalDateTime.now(),score);
-            //lazy loading della recensione
-            /*
-             * Utilizzando computeIfAbsent creo le liste mano a mano che aggiungo
-             * recensioni (popolando la tabella hash). Le liste nella tabella 
-             * hash sono sincronizzate tramite Collections.synchronizedList
-             */
-            List<Review> revsList = ReviewsTable.computeIfAbsent(hotelID, key -> {
-                // Create a new synchronized list
-                return Collections.synchronizedList(new ArrayList<Review>());
-            });
-            revsList.add(review);
-            
-            return new Response(Status.SUCCESS);
-        }
-        /*
-         * prima chiamata a REVIEW, controllo che l'utente sia loggato,
-         * in quel caso controllo che la citta e l'hotel esistano.
-         * 
-         * Se esistono allora setto il metodo a REVIEW e calcolo l'hotelID
-         * memorizzandolo nella sessione
-         */
-        else {
-            if(LoggedTable.get(session.Username) == null)
-                return new Response(Error.NOT_LOGGED);
-            
-            String[] data = (String[]) request.getData();
-            String city     = data[0].toLowerCase().trim();
-            String hotel    = data[1].toLowerCase().trim();
-
-            if(HotelsTable.get(city) == null)               return new Response(Error.NO_SUCH_CITY);
-            if(HotelsTable.get(city).get(hotel) == null)    return new Response(Error.NO_SUCH_HOTEL);
-            
-            session.setData(HotelsTable.get(city).get(hotel).getID());
-            session.setMethod(Method.REVIEW);
-            return new Response(Status.AWAIT_INPUT);
-        }
-    }
-    
     public static Response handleShowBadge(Request request, Session session) {
-        /*
-         * controlla se l'utente è loggato, in quel caso restituisce
-         * il mnemonic del badge. Se non è loggato restituisce un errore
-         */
-        if(LoggedTable.get(session.Username) == null)
+        if(!LoggedTable.containsKey(session.Username))
             return new Response(Error.NOT_LOGGED);
 
         try{
             return new Response(Status.SUCCESS,UsersTable.get(session.Username).getBadge().toString());
-
         } catch(NullPointerException e){
             return new Response(Error.NO_SUCH_USER);
         }
     }
     
+    public static Response handleExtLogout(Request request, Session session) {
+        //prima invocazione
+        if(session.LastMethod != Method.EXT_LOGOUT){
+            String username = (String) request.getData();
+            try{
+                User u = UsersTable.get(username);
+                if(u != null){
+                    session.Data = username;
+                    session.LastMethod = Method.EXT_LOGOUT;
+                    return new Response(Status.AWAIT_INPUT,u.salt);
+                }
+            } catch(NullPointerException e){
+                return new Response(Error.INVALID_REQUEST);
+            } return new Response(Error.NO_SUCH_USER);
+        }
+        //seconda invocazione
+        else{
+            String password = (String) request.getData();
+            String username = (String) session.Data;
+            session.flush();
+            try{
+                User u = UsersTable.get(username);
+                if(u.passwordTest(password)){
+                    LoggedTable.remove(username);
+                    return new Response(Status.SUCCESS);
+                }
+            } catch(NullPointerException e){
+                return new Response(Error.NO_SUCH_USER);
+            } 
+            return new Response(Error.BAD_PASSWD);
+        }
+    }
 
+    public static Response handleLogin(Request request, Session session){
+        if(session.getMethod() != Method.LOGIN){
+            String username = (String) request.getData();
+            try{
+                User u = UsersTable.get(username);
+                if(u == null) 
+                    return new Response(Error.NO_SUCH_USER);
+                else if(LoggedTable.containsKey(username)) 
+                    return new Response(Error.ALREADY_LOGGED);
+                else{
+                    session.Data = username;
+                    session.LastMethod = Method.LOGIN;
+                    return new Response(Status.AWAIT_INPUT,u.salt);
+                }
+            } catch (NullPointerException e){
+                return new Response(Error.INVALID_REQUEST);
+            }
+        }
+
+        else{
+            String password = (String) request.getData();
+            String username = (String) session.Data;
+            try {
+                User u = UsersTable.get(username);
+                if(LoggedTable.containsKey(username)) 
+                    return new Response(Error.ALREADY_LOGGED);
+                else if(u.passwordTest(password)){
+                    LoggedTable.put(username,true);
+                    session.Username = username;
+                    return new Response(Status.SUCCESS);
+                }
+                else return new Response(Error.BAD_PASSWD);
+            } catch (NullPointerException e){
+                return new Response(Error.INVALID_REQUEST);
+            } finally{
+                session.clearData();
+            }
+        }
+    }
+
+    public static Response handleRegister(Request request, Session session) {
+        if(session.getMethod() != Method.REGISTER){
+            String username = (String) request.getData();
+            //check username validity
+            if(!user_regex.matcher(username).matches())
+                return new Response(Error.INVALID_PARAMETER);
+            try{
+                User u = UsersTable.get(username);
+                if(u != null) 
+                    return new Response(Error.USER_EXISTS);
+                else{
+                    u = new User(username, null, HashUtils.generateSalt(SALT_LENGTH));
+                    session.Data = u;
+                    session.LastMethod = Method.REGISTER;
+                    return new Response(Status.AWAIT_INPUT,u.salt);
+                }
+            } catch (NullPointerException e){
+                session.flush();
+                return new Response(Error.INVALID_REQUEST);
+            }
+        }
+
+        else{
+            String password = null;
+            try{
+                password = (String) request.getData();
+                if(password.length() != HashUtils.HASH_LEN){
+                    return new Response(Error.INVALID_PARAMETER);
+                }
+            } catch(ClassCastException e){
+                return new Response(Error.INVALID_REQUEST);
+            }
+            User u = (User) session.Data;
+            u.setFingerprint(password);
+            try {
+                if(UsersTable.putIfAbsent(u.username,u) == null) 
+                    return new Response(Status.SUCCESS);
+                else return new Response(Error.USER_EXISTS);
+            } catch (NullPointerException e){
+                return new Response(Error.BAD_SESSION);
+            } finally{
+                session.flush();
+            }
+        }
+    }
+
+    public static Response handleReview(Request request, Session session){
+        if(session.getMethod() != Method.REVIEW){
+            String username = session.Username;
+            if(username == null || !LoggedTable.containsKey(username))
+                return new Response(Error.MUST_LOGIN);
+            
+            String[] data = (String[]) request.getData();
+            String city     = data[0].toLowerCase().trim();
+            String hotel    = data[1].trim();
+            
+            ArrayList<Hotel> Hmap = HotelsTable.get(city);
+            if(Hmap == null)    return new Response(Error.NO_SUCH_CITY);
+            
+            synchronized(Hmap){
+                for(Hotel h : Hmap){
+                    if(h.getName().equals(hotel)){
+                        session.setData(h.getID());
+                        session.setMethod(Method.REVIEW);
+                        return new Response(Status.SUCCESS);
+                    }
+                }
+                return new Response(Error.NO_SUCH_HOTEL);
+            }
+            
+        }
+        else{
+            Object maybeScore = request.getData();
+            if(!(maybeScore instanceof Score))
+                return new Response(Error.INVALID_REQUEST);
+            Score score = (Score) maybeScore;
+            //check if the score is valid
+            if(!score.isValidCleaning())      return new  Response(Error.SCORE_CLEANING);
+            else if(!score.isValidGlobal())   return new  Response(Error.SCORE_GLOBAL);
+            else if(!score.isValidPosition()) return new  Response(Error.SCORE_POSITION);
+            else if(!score.isValidPrice())    return new  Response(Error.SCORE_PRICE);
+            else if(!score.isValidService())  return new  Response(Error.SCORE_SERVICE);
+
+            int user_exp, hotelID;
+            try{
+                hotelID = (int) session.getData();
+                user_exp = UsersTable.get(session.Username).getExperience();
+            } catch(NullPointerException e){
+                return new Response(Error.NO_SUCH_USER);
+            } catch(ClassCastException e){
+                return new Response(Error.BAD_SESSION);
+            }
+            try{
+                ReviewsTable.compute(hotelID,(key,value) -> {
+                    if(value == null) value = new ArrayList<Review>();
+                    value.add(new Review(hotelID,session.Username,user_exp,LocalDateTime.now(),score));
+                    return value;
+                });
+                return new Response(Status.SUCCESS);
+            } catch(Exception e){
+                return new Response(Error.SERVER_ERROR);
+            } finally{
+                session.clearData();
+                session.clearMethod();
+            }
+
+        }
+        
+    }
+
+    
     
 }

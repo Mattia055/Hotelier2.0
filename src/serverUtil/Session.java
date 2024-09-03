@@ -25,14 +25,14 @@ public class Session {
     private     ByteBuffer  SizeBuffer;
     protected   String      Message;
     protected   String      Username;
-    protected   Object      SessionData;
+    protected   Object      Data;
     protected   Method      LastMethod;
     private     boolean     PendingBufferInit;
     private     boolean     PendingMessageCollection;
 
     public Session() {
         this.Username                   = null;
-        this.SessionData                = null;
+        this.Data                = null;
         this.LastMethod                 = null;
         this.Message                    = null;
         this.Buffer                     = null;
@@ -52,7 +52,7 @@ public class Session {
     }
 
     public Object getData() {
-        return SessionData;
+        return Data;
     }  
 
     public boolean isLogged(){
@@ -75,17 +75,18 @@ public class Session {
         this.LastMethod = null;
     }
 
+
     public void setData(Object data){
-        this.SessionData = data;
+        this.Data = data;
     }
 
     public void clearData(){
-        this.SessionData = null;
+        this.Data = null;
     }
 
     public void flush(){
         this.Username = null;
-        this.SessionData = null;
+        this.Data = null;
         this.LastMethod = null;
     }
 

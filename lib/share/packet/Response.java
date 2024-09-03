@@ -1,17 +1,4 @@
 package lib.share.packet;
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.google.gson.TypeAdapter;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
-
-import lib.share.struct.HotelDTO;
 import lib.share.struct.Score;
 
 /**
@@ -52,7 +39,9 @@ public class Response {
         SCORE_POSITION      ("The position score needs to be between "  + Score.getMin() + " and " + Score.getMax()),
         SCORE_CLEANING      ("The cleaning score needs to be between "  + Score.getMin() + " and " + Score.getMax()),
         SCORE_PRICE         ("The price score needs to be between "     + Score.getMin() + " and " + Score.getMax()),
-        SCORE_SERVICE       ("The service score needs to be between "   + Score.getMin() + " and " + Score.getMax());
+        SCORE_SERVICE       ("The service score needs to be between "   + Score.getMin() + " and " + Score.getMax()),
+        INVALID_PARAMETER   ("Parameter invalid"),
+        SERVER_ERROR        ("An error occurred on the server. Your request could not be processed.");
 
         private final String mnemonic;
 

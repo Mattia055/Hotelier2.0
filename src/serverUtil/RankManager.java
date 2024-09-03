@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import lib.share.struct.Score;
 
@@ -63,8 +65,9 @@ public class RankManager implements Runnable {
     private static RankManager instance = null;
 
     // Strutture dati per memorizzare informazioni su hotel e recensioni
-    private static ConcurrentHashMap<String, ConcurrentHashMap<String, Hotel>> HotelsTable;
-    private static ConcurrentHashMap<Integer, List<Review>> ReviewsTable;
+    private static ConcurrentHashMap<String, ArrayList<Hotel>> HotelsTable;
+    private static ConcurrentHashMap<Integer, ArrayList<Review>> ReviewsTable;
+    private static ConcurrentHashMap<String,User> UsersTable;
     private static LinkedBlockingQueue<Review> DumpQueue;
 
     // Notificatore UDP per la trasmissione degli aggiornamenti
@@ -75,26 +78,41 @@ public class RankManager implements Runnable {
     private static double exp_multiplier; // Moltiplicatore di esperienza per il calcolo del peso delle recensioni
     private static int max_experience; // Esperienza massima per calcolare il peso delle recensioni
 
-    // Tabella per tenere traccia degli hotel con il punteggio più alto per città
-    private static HashMap<String, Hotel> MaxRank;
+    // Punteggio fisso per le recensioni
+    private static Integer fixed_experience;
+    private static int exp_inf;
+    private static int exp_sup;
+    private static Consumer<String> addExperience;
+    private static LocalDateTime comparison;
+
 
     /**
      * Costruttore privato per l'implementazione del pattern Singleton.
      */
     private RankManager() {
-        HotelsTable = ServerContext.HotelsTable;
-        ReviewsTable = ServerContext.ReviewsTable;
-        DumpQueue = ServerContext.DumpingQueue;
-        multicaster = new UDPNotifier(ServerContext.MULTI_ADDR, ServerContext.MULTI_PORT);
-        time_decay = ServerContext.TIME_DECAY;
-        max_experience = User.MAX_EXP;
-        exp_multiplier = ServerContext.EXP_MULTIPLIER;
+        HotelsTable         = ServerContext.HotelsTable;
+        ReviewsTable        = ServerContext.ReviewsTable;
+        DumpQueue           = ServerContext.DumpingQueue;
+        time_decay          = ServerContext.TIME_DECAY;
+        max_experience      = User.MAX_EXP;
+        exp_multiplier      = ServerContext.EXP_MULTIPLIER;
+        fixed_experience    = ServerContext.EXP;
+        exp_inf             = ServerContext.EXP_INF;
+        exp_sup             = ServerContext.EXP_SUP;
+        UsersTable          = ServerContext.UsersTable;
+        multicaster         = new UDPNotifier(ServerContext.MULTI_ADDR, ServerContext.MULTI_PORT);
 
-        // Inizializza la tabella dei massimi
-        MaxRank = new HashMap<String, Hotel>();
-        for (String City : HotelsTable.keySet()) {
-            MaxRank.put(City, null);
+        if(fixed_experience == null){
+            addExperience = RankManager::addExperienceRand;
+        } else {
+            addExperience = RankManager::addExperienceFixed;
         }
+
+        // setta la funzione da eseguire per aggiornare il punteggio dell'utente
+    }
+
+    private void updateTime() {
+        comparison = LocalDateTime.now();
     }
 
     /**
@@ -109,92 +127,102 @@ public class RankManager implements Runnable {
         return instance;
     }
 
-    /**
-     * Aggiunge una città alla tabella dei massimi se non è già presente.
-     * 
-     * @param City il nome della città da aggiungere
-     */
-    public static void addCityToMaxRank(String City) {
-        synchronized (MaxRank) {
-            MaxRank.putIfAbsent(City, null);
-        }
+    private static void addExp(String u, int exp) throws NullPointerException{
+        UsersTable.get(u).addExperience(exp);
     }
 
-    /**
-     * Aggiorna il punteggio dell'hotel basato sulle recensioni e aggiunge le recensioni alla DumpQueue.
-     * 
-     * @param h l'hotel da aggiornare
-     * @param comparison il tempo corrente utilizzato per calcolare il peso delle recensioni
-     */
-    private static void updateHotelScoreDumpReviews(Hotel h, LocalDateTime comparison) {
-        // Dichiara uno score locale basato su quello dell'hotel
-        Score local = null;
+    private static void addExperienceRand(String u){
+        int exp = (int) (Math.random() * (exp_sup - exp_inf) + exp_inf);
+        addExp(u,exp);
+    }
 
-        synchronized (h) {
-            local = h.getRating() == null ? Score.Placeholder() : h.getRating().clone();
+    private static void addExperienceFixed(String u){
+        addExp(u,fixed_experience);
+    }
+
+    /*
+     * Aggiorna il ranking di un hotel in base a una lista di recensioni
+     */
+
+    private void updateRankDumpReviews(Hotel h,LocalDateTime comparison) {
+        //prendo la lista di recensioni dalla mappa
+        
+        //rimuovo la lista dalla hashmap
+        ArrayList<Review> reviews = ReviewsTable.remove(h.getID());
+        Score score = null;
+
+        synchronized(h){
+            Score local = h.getRating();
+            score = local == null ? Score.Placeholder() : local.clone();
         }
 
-        List<Review> RevList = ReviewsTable.get(h.getID());
-        if(RevList != null){
-            synchronized (RevList) {
-                for (Review r : RevList) {
-                    // Calcola i pesi basati sull'orario della recensione e l'esperienza dell'utente
-                    double time_weight = Math.exp(-time_decay * ChronoUnit.DAYS.between(r.getTime(), comparison));
-                    double exp_weight = Math.exp(-exp_multiplier * ((1 - r.getUserExp()) / max_experience));
-                    double weight = time_weight * exp_weight;
+        if(reviews != null){
+            for(Review r : reviews){
 
-                    // Aggiorna i punteggi locali con quelli delle recensioni
-                    local.setGlobal  ((1 / (weight + 1)) * (weight * r.getReviewScore().getGlobal()   + local.getGlobal()  ));
-                    local.setCleaning((1 / (weight + 1)) * (weight * r.getReviewScore().getCleaning() + local.getCleaning()));
-                    local.setPosition((1 / (weight + 1)) * (weight * r.getReviewScore().getPosition() + local.getPosition()));
-                    local.setPrice   ((1 / (weight + 1)) * (weight * r.getReviewScore().getPrice()    + local.getPrice()   ));
-                    local.setService ((1 / (weight + 1)) * (weight * r.getReviewScore().getService()  + local.getService() ));
+                //calcolo il peso della recensione
+                double time_weight  = Math.exp((-time_decay) * ChronoUnit.DAYS.between(r.getTime(), comparison));
+                double exp_weight   = Math.exp((-exp_multiplier) * ((1 - r.getUserExp()) / max_experience));
+                double weight       = time_weight * exp_weight;
 
-                    // Aggiunge la recensione alla DumpQueue
-                    try {
-                        DumpQueue.add(r);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                //aggiorno il punteggio dell'hotel
+                score.setGlobal  ((1 / (weight + 1)) * (weight * r.getReviewScore().getGlobal()     + score.getGlobal()  ));
+                score.setCleaning((1 / (weight + 1)) * (weight * r.getReviewScore().getCleaning()   + score.getCleaning()));
+                score.setPosition((1 / (weight + 1)) * (weight * r.getReviewScore().getPosition()   + score.getPosition()));
+                score.setPrice   ((1 / (weight + 1)) * (weight * r.getReviewScore().getPrice()      + score.getPrice()   ));
+                score.setService ((1 / (weight + 1)) * (weight * r.getReviewScore().getService()    + score.getService() ));
+
+                //aggiorno l'esperienza dell'utente
+                try{
+                    addExperience.accept(r.getUsername());
+                    DumpQueue.add(r);
+                }catch(NullPointerException e){
+                    e.printStackTrace();
                 }
-                // Azzero la lista delle recensioni dopo averle processate
-                RevList = new ArrayList<Review>();
             }
+
+        }
+        //aggiorno il punteggio dell'hotel
+        synchronized(h){
+            h.setRating(score);
         }
 
-        // Aggiorna il punteggio dell'hotel con il punteggio calcolato
-        synchronized (h) {
-            h.setRating(local);
-        }
     }
 
-    /**
-     * Esegue il thread per aggiornare i punteggi degli hotel e notificare gli aggiornamenti.
-     */
+    private void UpdateTopHotel(ArrayList<Hotel> hlist){
+        Hotel hTop = hlist.get(hlist.size()-1);
+            synchronized(hlist){
+                for(Hotel h : hlist){
+                    updateRankDumpReviews(h,comparison);
+                }
+                //ordinamento lista secondo il rank
+                //l'ultimo hotel della lista è quello che ha rank massimo
+                Collections.sort(hlist,(h1,h2) -> Double.compare(h1.rank, h2.rank));
+
+                //aggiorno la posizione di ogni hotel
+                int i = hlist.size();
+                for(Hotel h : hlist){
+                    h.rank_position = i--;
+                }
+            }
+
+        if(hTop.getName().equals(hlist.get(hlist.size()-1).getName())){
+            //se l'hotel in cima alla lista è cambiato, invio una notifica
+            multicaster.NotifyGroup(hTop.getName());
+        }
+
+    }
+
     @Override
     public void run() {
-        LocalDateTime comparison = LocalDateTime.now();
-        
-        // Itera su ogni città nella tabella degli hotel
-        for (Map.Entry<String, ConcurrentHashMap<String, Hotel>> City : HotelsTable.entrySet()) {
-            // Ordina gli hotel per città in base al punteggio
-            ArrayList<Hotel> HotelsPerCity = new ArrayList<Hotel>(City.getValue().values()); 
-            for (Hotel h : HotelsPerCity) {
-                updateHotelScoreDumpReviews(h, comparison); // Aggiorna il punteggio dell'hotel e gestisce le recensioni
-            }
 
-            // Ordina gli hotel in base al punteggio medio in modo decrescente
-            Collections.sort(HotelsPerCity, Comparator.comparingDouble((Hotel hotel) -> hotel.getRating().getMean()).reversed());
-
-            // Aggiorna la tabella dei massimi
-            synchronized (MaxRank) {
-                if (MaxRank.get(City.getKey()) == null || MaxRank.get(City.getKey()).getID() != HotelsPerCity.get(0).getID()) {
-                    MaxRank.put(City.getKey(), HotelsPerCity.get(0));
-                    
-                    // Invia una notifica UDP con il miglior hotel
-                    multicaster.NotifyGroup("Il miglior hotel a " + City.getKey() + " è " + HotelsPerCity.get(0).getName() + " con un punteggio di " + HotelsPerCity.get(0).getRating().getMean());
-                }
-            }
+        updateTime();
+        //aggiorno il ranking di tutti gli hotel e li ordino
+        for(ArrayList<Hotel> hotels : HotelsTable.values()){
+            UpdateTopHotel(hotels);
         }
+        System.out.println("Ranking updated");
     }
+
+
+    
 }

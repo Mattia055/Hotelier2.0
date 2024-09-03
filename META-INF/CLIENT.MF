@@ -1,4 +1,4 @@
 Manifest-Version: 1.0
 Created-By: 1.8.0_411 (Oracle Corporation)
 Main-Class: clientUtil.ClientMain
-Class-Path: lib/gson.jar
+Class-Path: lib/gson.jar lib/jline.jar

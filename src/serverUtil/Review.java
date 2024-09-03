@@ -10,11 +10,11 @@ import java.time.LocalDateTime;
  */
 public class Review {
 
-    private int HotelId;         // Identificativo dell'hotel recensito
-    private String Username;     // Nome utente del recensore
-    private int UserExp;         // Esperienza dell'utente (ad esempio, livello o punti)
-    private Score ReviewScore;   // Punteggio della recensione
-    private LocalDateTime Time;  // Data e ora della recensione
+    protected int HotelId;         // Identificativo dell'hotel recensito
+    protected String Username;     // Nome utente del recensore
+    protected int UserExp;         // Esperienza dell'utente (ad esempio, livello o punti)
+    protected Score ReviewScore;   // Punteggio della recensione
+    protected LocalDateTime Time;  // Data e ora della recensione
 
     /**
      * Costruttore per la classe Review.

@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -23,25 +24,23 @@ import com.google.gson.stream.JsonWriter;
 import lib.server.temp.TempFileUtil;
 
 /**
- * Gestisce il parsing e la serializzazione dei dati utilizzando la libreria Gson per gli hotel, gli utenti e le recensioni.
- * Fornisce anche implementazioni per il salvataggio e il caricamento dei dati in formato JSON.
+ * Manages parsing and serialization of data using Gson for hotels, users, and reviews.
+ * Provides implementations for saving and loading data in JSON format.
  */
 public class Parser {
 
-    // Configurazione di Gson per la serializzazione e deserializzazione JSON
-    private static Gson Gson = new GsonBuilder()
+    private static final Gson Gson = new GsonBuilder()
             .setPrettyPrinting()
             .disableHtmlEscaping()
             .serializeNulls()
             .create();
 
-    // Tipi per la deserializzazione dei dati
-    private static Type HotelsListT = new TypeToken<List<Hotel>>(){}.getType();
-    private static Type HotelT = new TypeToken<Hotel>(){}.getType();
-    private static Type UserT = new TypeToken<User>(){}.getType();
-    private static Type UserListT = new TypeToken<List<User>>(){}.getType();
-    private static Type ReviewT = new TypeToken<Review>(){}.getType();
-    private static Type ReviewListT = new TypeToken<List<Review>>(){}.getType();
+    private static final Type HotelsListT = new TypeToken<List<Hotel>>(){}.getType();
+    private static final Type HotelT = new TypeToken<Hotel>(){}.getType();
+    private static final Type UserT = new TypeToken<User>(){}.getType();
+    private static final Type UserListT = new TypeToken<List<User>>(){}.getType();
+    private static final Type ReviewT = new TypeToken<Review>(){}.getType();
+    private static final Type ReviewListT = new TypeToken<List<Review>>(){}.getType();
 
     private static final String TEMP_DIR_DEF = "tempDirectory";
 
@@ -49,18 +48,12 @@ public class Parser {
      * Carica gli hotel dal file JSON e li inserisce nella mappa degli hotel.
      */
     public static class HotelsLoad implements Runnable {
-        private String filepath; // Percorso del file JSON contenente gli hotel
-        private ConcurrentHashMap<String, ConcurrentHashMap<String, Hotel>> Map; // Mappa degli hotel da aggiornare
+        private final String filepath; // Percorso del file JSON contenente gli hotel
+        private final ConcurrentHashMap<String, ArrayList<Hotel>> Map; // Mappa degli hotel da aggiornare
 
-        /**
-         * Costruttore per HotelLoad.
-         *
-         * @param path Percorso del file JSON.
-         * @param Table Mappa degli hotel da aggiornare.
-         */
-        public HotelsLoad(String path, ConcurrentHashMap<String, ConcurrentHashMap<String, Hotel>> Table) {
-            filepath = path;
-            Map = Table;
+        public HotelsLoad(String path, ConcurrentHashMap<String, ArrayList<Hotel>> table) {
+            this.filepath = path;
+            this.Map = table;
         }
 
         @Override
@@ -68,14 +61,13 @@ public class Parser {
             try (JsonReader reader = new JsonReader(new FileReader(filepath))) {
                 List<Hotel> hotelsFromFile = Gson.fromJson(reader, HotelsListT);
                 for (Hotel h : hotelsFromFile) {
-                    //faccio nel rankmanager
-                    //if(h.getRating() == null)
-                        //h.setRating(Score.Placeholder());
-                    Map.compute(h.getCity().toLowerCase(), (String key, ConcurrentHashMap<String, Hotel> value) -> {
-                        if (value == null) value = new ConcurrentHashMap<String, Hotel>();
-                        value.put(h.getName(), h);
-                        return value;
-                    });
+                    Map.compute(h.getCity().toLowerCase(), 
+                        (String key, ArrayList<Hotel> value) -> {
+                            if (value == null) value = new ArrayList<>();
+                            value.add(h);
+                            return value;
+                        }
+                    );
                 }
             } catch (Exception e) {
                 // Problemi riscontrati possono includere file non trovato o JSON malformato
@@ -85,38 +77,30 @@ public class Parser {
     }
 
     /**
-     * Salva gli hotel nella mappa in un file JSON.
+     * Salva gli hotel dalla mappa in un file JSON.
      */
     public static class HotelsSave implements Runnable {
-        private String filepath; // Percorso del file JSON in cui salvare gli hotel
-        private Collection<ConcurrentHashMap<String, Hotel>> HotelsToSave; // Collezione di mappe di hotel da salvare
+        private final String filepath; // Percorso del file JSON in cui salvare gli hotel
+        Collection<ArrayList<Hotel>> HotelsToSaveMap; // Collezione di mappe di hotel da salvare
         private Path tempfile; // Percorso del file temporaneo
 
-        /**
-         * Costruttore per HotelSave.
-         *
-         * @param path Percorso del file JSON.
-         * @param hotels Collezione di mappe di hotel da salvare.
-         */
-        public HotelsSave(String path, ConcurrentHashMap<String, ConcurrentHashMap<String, Hotel>> hotels) {
-            tempfile = null;
-            HotelsToSave = hotels.values();
-            filepath = path;
+        public HotelsSave(String path, ConcurrentHashMap<String, ArrayList<Hotel>> hotels) {
+            this.filepath = path;
+            this.HotelsToSaveMap = hotels.values();
         }
 
         @Override
         public void run() {
+            Iterator<ArrayList<Hotel>> ListsToSave = HotelsToSaveMap.iterator();
             boolean success = false;
             try {
-                if(HotelsToSave.isEmpty()) return;
                 tempfile = TempFileUtil.createTempSameDir(filepath, "htl", ".tmp");
                 try (JsonWriter writer = Gson.newJsonWriter(new FileWriter(tempfile.toFile()))) {
                     writer.beginArray();
-                    for (ConcurrentHashMap<String, Hotel> hotelMap : HotelsToSave) {
-                        synchronized (hotelMap) {
-                            for (Hotel h : hotelMap.values()) {
-                                Gson.toJson(h, HotelT, writer);
-                            }
+                    while(ListsToSave.hasNext()) {
+                        ArrayList<Hotel> hotelsList = ListsToSave.next();
+                        synchronized (hotelsList){
+                            hotelsList.forEach(h -> Gson.toJson(h, HotelT, writer));
                         }
                     }
                     writer.endArray().flush();
@@ -137,31 +121,23 @@ public class Parser {
      * Carica gli utenti dal file JSON e li inserisce nella mappa degli utenti.
      */
     public static class UsersLoad implements Runnable {
-        private String filepath; // Percorso del file JSON contenente gli utenti
-        private ConcurrentHashMap<String, User> Map; // Mappa degli utenti da aggiornare
+        private final String filepath; // Percorso del file JSON contenente gli utenti
+        private final ConcurrentHashMap<String, User> Map; // Mappa degli utenti da aggiornare
 
-        /**
-         * Costruttore per UsersLoad.
-         *
-         * @param path Percorso del file JSON.
-         * @param table Mappa degli utenti da aggiornare.
-         */
         public UsersLoad(String path, ConcurrentHashMap<String, User> table) {
             this.filepath = path;
-            Map = table;
+            this.Map = table;
         }
 
         @Override
         public void run() {
-            try (JsonReader reader = new JsonReader(new FileReader("./"+filepath))) {
+            try (JsonReader reader = new JsonReader(new FileReader("./" + filepath))) {
                 List<User> UsersFromFile = Gson.fromJson(reader, UserListT);
-                for (User u : UsersFromFile){
+                for (User u : UsersFromFile) {
                     Map.put(u.getUsername(), u);
                 }
             } catch (FileNotFoundException e) {
-                System.out.println("File not found " + filepath);
                 // Gestisce il caso in cui il file non sia trovato
-                return;
             } catch (Exception e) {
                 // Gestisce il caso di utenti malformati
                 e.printStackTrace();
@@ -170,37 +146,28 @@ public class Parser {
     }
 
     /**
-     * Salva gli utenti nella mappa in un file JSON.
+     * Salva gli utenti dalla mappa in un file JSON.
      */
     public static class UsersSave implements Runnable {
-        private String filepath; // Percorso del file JSON in cui salvare gli utenti
-        private Collection<User> UsersToSave; // Collezione di utenti da salvare
+        private final String filepath; // Percorso del file JSON in cui salvare gli utenti
+        private final Collection<User> UsersToSaveMap; // Collezione di utenti da salvare
         private Path tempfile; // Percorso del file temporaneo
 
-        /**
-         * Costruttore per UsersSave.
-         *
-         * @param filepath Percorso del file JSON.
-         * @param Users Collezione di utenti da salvare.
-         */
         public UsersSave(String filepath, ConcurrentHashMap<String, User> Users) {
             this.filepath = filepath;
-            UsersToSave = Users.values();
+            this.UsersToSaveMap = Users.values();
             tempfile = null;
-            System.out.println("Parser: saving users to " + filepath);
         }
 
         @Override
         public void run() {
-            Boolean success = false;
+            boolean success = false;
             try {
-                if(UsersToSave.isEmpty()) return;
+                Iterator<User> UsersToSave = UsersToSaveMap.iterator();
                 tempfile = TempFileUtil.createTempSameDir(filepath, "usr", ".tmp");
                 try (JsonWriter writer = Gson.newJsonWriter(new FileWriter(tempfile.toFile()))) {
                     writer.beginArray();
-                    for (User u : UsersToSave) {
-                        Gson.toJson(u, UserT, writer);
-                    }
+                    UsersToSave.forEachRemaining(u -> Gson.toJson(u, UserT, writer));
                     writer.endArray().flush();
                 }
                 TempFileUtil.AtomicMove(tempfile, filepath);
@@ -219,18 +186,12 @@ public class Parser {
      * Carica le recensioni dal file JSON e le inserisce nella mappa delle recensioni.
      */
     public static class ReviewsLoad implements Runnable {
-        private String filepath; // Percorso del file JSON contenente le recensioni
-        private ConcurrentHashMap<Integer, List<Review>> RevMap; // Mappa delle recensioni da aggiornare
+        private final String filepath; // Percorso del file JSON contenente le recensioni
+        private final ConcurrentHashMap<Integer, List<Review>> RevMap; // Mappa delle recensioni da aggiornare
 
-        /**
-         * Costruttore per ReviewsLoad.
-         *
-         * @param filepath Percorso del file JSON.
-         * @param queue Mappa delle recensioni da aggiornare.
-         */
         public ReviewsLoad(String filepath, ConcurrentHashMap<Integer, List<Review>> queue) {
             this.filepath = filepath;
-            RevMap = queue;
+            this.RevMap = queue;
         }
 
         @Override
@@ -238,15 +199,16 @@ public class Parser {
             try (JsonReader reader = new JsonReader(new FileReader(filepath))) {
                 ArrayList<Review> Reviews = Gson.fromJson(reader, ReviewListT);
                 for (Review r : Reviews) {
-                    RevMap.compute(r.getHotelId(), (Integer key, List<Review> value) -> {
-                        if (value == null) value = new ArrayList<Review>();
-                        value.add(r);
-                        return value;
-                    });
+                    RevMap.compute(r.getHotelId(), 
+                        (Integer key, List<Review> value) -> {
+                            if (value == null) value = new ArrayList<>();
+                            value.add(r);
+                            return value;
+                        }
+                    );
                 }
             } catch (FileNotFoundException e) {
                 // Gestisce il caso in cui il file non sia trovato
-                return;
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -257,61 +219,49 @@ public class Parser {
      * Salva le recensioni dalla LinkedBlockingQueue in un file JSON.
      */
     public static class ReviewsSave implements Runnable {
-        private String filepath; // Percorso del file JSON in cui salvare le recensioni
-        private LinkedBlockingQueue<Review> DumpingQueue; // Coda delle recensioni da salvare
+        private final String filepath; // Percorso del file JSON in cui salvare le recensioni
+        private final LinkedBlockingQueue<Review> DumpingQueue; // Coda delle recensioni da salvare
         private Path tempfile; // Percorso del file temporaneo
-        private long timepoll; // Tempo di attesa per il polling delle recensioni
-        private TimeUnit Unit; // Unità di tempo per il polling
-        private int Max_Elab; // Numero massimo di recensioni da elaborare
+        private final long timepoll; // Tempo di attesa per il polling delle recensioni
+        private final TimeUnit Unit; // Unità di tempo per il polling
+        private final int Max_Elab; // Numero massimo di recensioni da elaborare
 
-        /**
-         * Costruttore per ReviewsSave.
-         *
-         * @param filepath Percorso del file JSON.
-         * @param queue Coda delle recensioni da salvare.
-         * @param max Numero massimo di recensioni da elaborare.
-         * @param timetopoll Tempo di attesa per il polling.
-         * @param unit Unità di tempo per il polling.
-         */
         public ReviewsSave(String filepath, LinkedBlockingQueue<Review> queue, int max, long timetopoll, TimeUnit unit) {
             this.filepath = filepath;
-            tempfile = null;
-            DumpingQueue = queue;
-            timepoll = timetopoll;
-            Unit = unit;
-            Max_Elab = max;
+            this.DumpingQueue = queue;
+            this.timepoll = timetopoll;
+            this.Unit = unit;
+            this.Max_Elab = max;
         }
 
         @Override
         public void run() {
-            if(DumpingQueue.isEmpty()) return;
+            if (DumpingQueue.isEmpty()) return;
             int dumped_revs = 0;
             try {
                 File tempDir = TempFileUtil.TempDirSamePath(filepath, TEMP_DIR_DEF);
                 tempfile = Files.createTempFile(tempDir.toPath(), "rvs", ".tmp");
                 try (JsonWriter writer = Gson.newJsonWriter(new FileWriter(tempfile.toFile()))) {
                     writer.beginArray();
-                    System.out.println("Dumping reviews... "+DumpingQueue.isEmpty());
-                    while (dumped_revs < Max_Elab && (!DumpingQueue.isEmpty())) {
-                        Review current_rev = DumpingQueue.poll(timepoll, Unit);
-                        if (current_rev == null) break;
-                        Gson.toJson(current_rev, ReviewT, writer);
+                    while (dumped_revs < Max_Elab && !DumpingQueue.isEmpty()) {
+                        Review tmp = DumpingQueue.poll(timepoll, Unit);
+                        if (tmp == null) break;
+                        Gson.toJson(tmp, ReviewT, writer);
                         dumped_revs++;
                     }
-                    writer.endArray();
+                    writer.endArray().flush();
                 }
-                
             } catch (Exception e) {
                 e.printStackTrace();
-            }
+            } 
         }
     }
 
     /**
-     * Unisce tutte le recensioni dai file temporanei nel file principale.
-     */
+ * Unisce tutte le recensioni dai file temporanei nel file principale.
+ */
     public static class MergeReviews implements Runnable {
-        private String file_path; // Percorso del file principale delle recensioni
+        private final String file_path; // Percorso del file principale delle recensioni
         private Path tempfile; // Percorso del file temporaneo
         private File tempDir = null; // Directory temporanea
 
@@ -321,47 +271,65 @@ public class Parser {
          * @param filepath Percorso del file principale delle recensioni.
          */
         public MergeReviews(String filepath) {
-            file_path = filepath;
-            tempfile = null;
+            this.file_path = filepath;
+            this.tempfile = null;
         }
 
         @Override
         public void run() {
             boolean success = false;
 
+            // Apre la directory temporanea
             tempDir = TempFileUtil.TempDirOpen(file_path, TEMP_DIR_DEF);
             File[] list_files = tempDir.listFiles();
-            
-            if (list_files.length > 0) {
-                try (JsonWriter writer = Gson.newJsonWriter(new FileWriter(tempfile.toFile()))) {
-                    writer.beginArray();
-                    ArrayList<Review> rev_list = null;
-                    // Scrive il contenuto del file principale esistente
-                    try (JsonReader reader = new JsonReader(new FileReader(new File(file_path)))) {
-                        rev_list = Gson.fromJson(reader, ReviewListT);
-                    }
-                    for (Review r : rev_list) {
-                        Gson.toJson(r, ReviewT, writer);
-                    }
 
-                    // Aggiunge i contenuti dei file temporanei
-                    for (File f : list_files) {
-                        try (JsonReader reader = new JsonReader(new FileReader(f))) {
+            // Verifica che ci siano file temporanei da unire
+            if (list_files.length > 0) {
+                try {
+                    tempfile = TempFileUtil.createTempSameDir(file_path, "rev-merge", ".tmp");
+                    try (JsonWriter writer = Gson.newJsonWriter(new FileWriter(tempfile.toFile()))) {
+                        writer.beginArray();
+                        ArrayList<Review> rev_list = null;
+
+                        // Scrive il contenuto del file principale esistente
+                        try (JsonReader reader = new JsonReader(new FileReader(file_path))) {
                             rev_list = Gson.fromJson(reader, ReviewListT);
+
+                            // Aggiunge le recensioni dal file principale se esistono
+                            if (rev_list != null) {
+                                for (Review r : rev_list) {
+                                    Gson.toJson(r, ReviewT, writer);
+                                }
+                            }
+                        } catch (FileNotFoundException e) {
+                            // Nel caso il file principale non esista viene skippato
                         }
-                        for (Review r : rev_list) {
-                            Gson.toJson(r, ReviewT, writer);
+
+                        // Aggiunge i contenuti dei file temporanei
+                        for (File f : list_files) {
+                            try (JsonReader reader = new JsonReader(new FileReader(f))) {
+                                rev_list = Gson.fromJson(reader, ReviewListT);
+                            }
+
+                            // Scrive ogni recensione letta dai file temporanei
+                            for (Review r : rev_list) {
+                                Gson.toJson(r, ReviewT, writer);
+                            }
                         }
-                    }
-                    writer.endArray().flush();
-                    TempFileUtil.AtomicMove(tempfile, file_path);
-                    success = true;
+
+                        writer.endArray().flush();
+                        TempFileUtil.AtomicMove(tempfile, file_path);
+                        success = true;
+                    } 
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
+                    // Se l'unione ha avuto successo, elimina i file temporanei e la directory temporanea
                     if (success) {
                         try {
                             TempFileUtil.deleteDirectoryRecursively(tempDir);
+                            TempFileUtil.deleteTempFileIfExists(tempDir.toPath());
+                            TempFileUtil.deleteTempFileIfExists(tempfile);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -370,4 +338,5 @@ public class Parser {
             }
         }
     }
+
 }

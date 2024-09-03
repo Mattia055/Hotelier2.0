@@ -40,6 +40,10 @@ public class ServerContext {
     protected static String MULTI_ADDR;
     protected static int MULTI_PORT;
 
+    //parametri per la registrazione
+    protected static int SALT_LENGTH = 8;
+    protected static String USERNAME_REGEX = "^[A-Za-z0-9_-]+$";
+
     // Parametri del MainThreadPool
     protected static ExecutorService    MainPool;
     private static int POOL_MAXSIZE     = Integer.MAX_VALUE;
@@ -58,6 +62,9 @@ public class ServerContext {
     // Parametri per il RankingManager
     protected static double TIME_DECAY = 0.1;
     protected static double EXP_MULTIPLIER = 0.1;
+    protected static Integer EXP = null;
+    protected static int EXP_INF = 10;
+    protected static int EXP_SUP = 100;
 
     // Parametri per i thread pool schedulati
     protected static ScheduledExecutorService   RankingPool;
@@ -83,14 +90,11 @@ public class ServerContext {
     protected static String Reviewsfrom = "data/Reviews.json";
     protected static String Reviewsto   = null;
 
-    //flags
-    private static boolean FORCE_REVS_INIT = true;
-
     // Tabelle e code
-    protected static ConcurrentHashMap<String, ConcurrentHashMap<String, Hotel>> HotelsTable;
+    protected static ConcurrentHashMap<String, ArrayList<Hotel>> HotelsTable;
     protected static ConcurrentHashMap<String, User> UsersTable;
     protected static ConcurrentHashMap<String, Boolean> LoggedTable; // Non si tiene traccia dei valori
-    protected static ConcurrentHashMap<Integer, List<Review>> ReviewsTable;
+    protected static ConcurrentHashMap<Integer, ArrayList<Review>> ReviewsTable;
     protected static LinkedBlockingQueue<Review> DumpingQueue;
 
     //parametri per RequestHandler
@@ -176,7 +180,6 @@ public class ServerContext {
         MULTI_ADDR          = loadArg.getStringAttribute("multicast-addr", null);
         MULTI_PORT          = loadArg.getIntAttribute   ("multicast-port", 0);
         MAX_BATCH_SIZE      = loadArg.getIntAttribute   ("max_batch_size", MAX_BATCH_SIZE);
-        FORCE_REVS_INIT     = loadArg.getBooleanAttribute("force_revs_init", FORCE_REVS_INIT);
         Hotelsto            = loadArg.getStringAttribute("hotelsto", Hotelsfrom);
         Usersto             = loadArg.getStringAttribute("usersto", Usersfrom);
         Reviewsto           = loadArg.getStringAttribute("reviewsto", Reviewsfrom);
@@ -187,6 +190,14 @@ public class ServerContext {
         PACKET_LENGTH       = loadArg.getIntAttribute   ("packet_length", PACKET_LENGTH);
         BUFFER_POOL_SIZE    = loadArg.getIntAttribute   ("buffer_pool_size", BUFFER_POOL_SIZE);
         ALLOC_TRESHOLD      = loadArg.getIntAttribute   ("alloc_treshold", ALLOC_TRESHOLD);
+        EXP_INF             = loadArg.getIntAttribute   ("user_exp_inf", EXP_INF);
+        EXP_SUP             = loadArg.getIntAttribute   ("user_exp_sup", EXP_SUP);
+        SALT_LENGTH         = loadArg.getIntAttribute   ("salt_length", SALT_LENGTH);
+        USERNAME_REGEX      = loadArg.getStringAttribute("username_regex", USERNAME_REGEX);
+
+        try{
+            EXP                 = loadArg.getIntAttribute   ("user_exp", EXP);
+        } catch (NullPointerException e){}
 
 
         // Verifica la validità degli attributi
@@ -200,9 +211,6 @@ public class ServerContext {
      * @throws FileNotFoundException Se uno dei file specificati non esiste.
      */
     private static void validateConfiguration() throws MalformedParametersException {
-        if(FORCE_REVS_INIT && !(validateFileExistence(Reviewsfrom))){
-            throw new MalformedParametersException("Il parametro 'reviewsfrom' è attivo ma 'reviewsfrom' non è specificato o non esiste");
-        }
 
         if (!validateFileExistence(Hotelsfrom)) {
             throw new MalformedParametersException("Il percorso specificato da 'hotelsfrom' è mancante o non esiste");
@@ -216,6 +224,10 @@ public class ServerContext {
         }
         if (MULTI_PORT <= 1024 || MULTI_PORT > 65535) {
             throw new MalformedParametersException("Il parametro 'multicast-port' è mancante o non valido. Seleziona un valore tra [1024, 65535].");
+        }
+
+        if(SALT_LENGTH <= 0){
+            throw new MalformedParametersException("Il parametro 'salt_length' è minore o uguale a 0");
         }
 
         // Verifica se MULTI_ADDR è un indirizzo host valido
@@ -254,47 +266,12 @@ public class ServerContext {
         ArrayList<Future<?>> results = new ArrayList<>();
         Future<?> HotelTask = MainPool.submit(new Parser.HotelsLoad(Hotelsfrom, HotelsTable));
         Future<?> UsersTask = MainPool.submit(new Parser.UsersLoad(Usersfrom, UsersTable));
-        Future<?> ReviewsTask = null;
 
-        if(FORCE_REVS_INIT){
-            //aggiunge la task qui per 
-            ReviewsTask = MainPool.submit(new Parser.ReviewsLoad(Reviewsfrom, ReviewsTable));
-            waitForTaskCompletion(HotelTask);
-            HotelTask = null;
-            for (ConcurrentHashMap<String, Hotel> city : HotelsTable.values()) {
-                city.values().forEach(hotel -> {hotel.setRating(null);});
-            }
-
-            /*
-             * Il do - while esiste nel caso il RankManager non riesca a processare
-             * tutte le recensioni di ReviewsTask, in modo da riprovare finché non
-             * riesce a processarle tutte.
-             */
-            do{
-                waitForTaskCompletion(MainPool.submit(RankManager.getInstance()));
-
-                // riinizializza la coda dumping dato che non si fa il dumping di
-                // recensioni caricate dal file
-
-                DumpingQueue = new LinkedBlockingQueue<>();                
-
-            }
-            while(!ReviewsTask.isDone());
-        }
-
-        waitForTaskCompletion(HotelTask, UsersTask, ReviewsTask);
+        waitForTaskCompletion(HotelTask, UsersTask);
 
         // Attende il completamento di tutti i task di inizializzazione
         for (Future<?> task : results) {
             waitForTaskCompletion(task);
-        }
-        /*
-         * forza il caricamento delle recensioni e il ricalcolo del ranking degli
-         * hotel se il flag è attivo
-         */
-        if(FORCE_REVS_INIT){
-            //azzera i punteggi degli hotel
-            
         }
 
         //inizializza hashMap delle recensioni

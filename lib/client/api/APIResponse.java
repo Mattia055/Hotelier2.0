@@ -31,6 +31,8 @@ public class APIResponse {
         statusMapping.put(Error.SCORE_SERVICE,  Status.SCORE_SERVICE    );
         statusMapping.put(Error.NO_ERR,         Status.OK               );
         statusMapping.put(Error.BAD_SESSION,    Status.SERVER_ERROR     );
+        statusMapping.put(Error.INVALID_PARAMETER, Status.INVALID_PARAMETER);
+        statusMapping.put(Error.SERVER_ERROR,   Status.SERVER_ERROR     );
     }
 
     private Status status;
@@ -146,10 +148,9 @@ public class APIResponse {
         this.data = data;
     }
 
-    @SuppressWarnings("unchecked")
-    public ArrayList<HotelDTO> getHotelList() {
+    public HotelDTO[] getHotelList() {
         try{
-            return (ArrayList<HotelDTO>) data;
+            return (HotelDTO[]) data;
         } catch (ClassCastException e){
             return null;
         }
@@ -171,7 +172,6 @@ public class APIResponse {
      * 
     */
     @Override
-    @SuppressWarnings("unchecked")
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("APIResponse{\n" +

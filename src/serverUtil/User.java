@@ -8,6 +8,7 @@ public class User {
     // Attributi dell'utente
     protected String username;
     private String fingerprint;
+    protected String salt;
     private int experience;
     private Badge rank;
 
@@ -66,9 +67,10 @@ public class User {
      * @param username Il nome utente dell'utente.
      * @param fingerprint L'impronta digitale dell'utente.
      */
-    public User(String username, String fingerprint) {
+    public User(String username, String fingerprint,String salt) {
         this.username = username;
         this.fingerprint = fingerprint;
+        this.salt = salt;
         this.experience = INIT_EXP;
         this.rank = INIT_BADGE;
     }
@@ -91,6 +93,10 @@ public class User {
         return fingerprint;
     }
 
+    protected void setFingerprint(String fingerprint){
+        this.fingerprint = fingerprint;
+    }
+
     /**
      * Restituisce il livello di esperienza dell'utente.
      *
@@ -106,12 +112,19 @@ public class User {
      * @param experience Il nuovo livello di esperienza.
      * @throws IllegalArgumentException Se l'esperienza è negativa o supera il valore massimo.
      */
-    public void setExperience(int experience) {
-        if (experience < 0 || experience > MAX_EXP) {
-            throw new IllegalArgumentException("L'esperienza deve essere compresa tra 0 e " + MAX_EXP);
+    protected void setExperience(int experience) throws IllegalArgumentException{
+        if (experience < 0 ) {
+            throw new IllegalArgumentException("experience in [0,"+MAX_EXP+"]");
         }
         this.experience = experience;
         this.rank = Badge.getRankForExperience(experience);
+    }
+
+    synchronized public void addExperience(int experience) throws IllegalArgumentException{
+        int newExperience = this.experience + experience;
+        if(newExperience <0) setExperience(0);
+        else if(newExperience > MAX_EXP) setExperience(MAX_EXP);
+        else setExperience(newExperience);
     }
 
     /**

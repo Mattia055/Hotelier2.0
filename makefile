@@ -1,5 +1,6 @@
 LIB    		= lib
 JSON      	= $(LIB)/gson.jar
+JLINE	  	= $(LIB)/jline.jar
 CONF      	= config
 META      	= META-INF
 SERVER_META = $(META)/SERVER.MF
@@ -53,11 +54,11 @@ $(SHARELIB_CLASSES): $(SHARELIB_SOURCES)
 $(CLIENTLIB_CLASSES): $(CLIENTLIB_SOURCES)  $(SHARELIB_CLASSES)
 	@echo -e $(COLOR)Compiling Client Libs ...$(RESET)
 	@mkdir -p $(CLASS)
-	$(JAVAC) $(JFLAGS) -d $(CLASS) -cp $(JSON):$(CLASS) $(CLIENTLIB_SOURCES)
+	$(JAVAC) $(JFLAGS) -d $(CLASS) -cp $(JSON):$(CLASS):$(JLINE) $(CLIENTLIB_SOURCES)
 
 $(CLIENT_CLASSES): $(CLIENT_SOURCES) $(CLIENTLIB_CLASSES) $(SHARELIB_CLASSES)
 	@echo -e $(COLOR)Compiling Client Core ...$(RESET)
-	$(JAVAC) $(JFLAGS) -d $(CLASS) -cp $(JSON):$(CLASS) $(CLIENT_SRC)/*.java
+	$(JAVAC) $(JFLAGS) -d $(CLASS) -cp $(JSON):$(CLASS):$(JLINE) $(CLIENT_SRC)/*.java
 
 $(CLIENT_JAR): $(CLIENT_CLASSES) $(CLIENTLIB_CLASSES) $(SHARELIB_CLASSES) $(CONF)/client.properties
 	@echo -e $(COLOR)Compiling Client.jar ...$(RESET)
@@ -69,7 +70,7 @@ $(CLIENT_JAR): $(CLIENT_CLASSES) $(CLIENTLIB_CLASSES) $(SHARELIB_CLASSES) $(CONF
 $(SERVLIB_CLASSES): $(SERVLIB_SOURCES) $(SHARELIB_CLASSES)
 	@echo -e $(COLOR)Compiling Server Libs ...$(RESET)
 	@mkdir -p $(CLASS)
-	$(JAVAC) $(JFLAGS) -d $(CLASS) $(SERVLIB_SOURCES)
+	$(JAVAC) $(JFLAGS) -d $(CLASS) -cp $(JSON) $(SERVLIB_SOURCES)
 
 # Rule to compile server utility code
 $(SERVUTIL_CLASSES): $(SERVUTIL_SOURCES) $(SERVLIB_CLASSES) $(SHARELIB_CLASSES)
@@ -102,5 +103,10 @@ runClient: $(CLIENT_JAR)
 	@java -jar $(CLIENT_JAR) || true
 
 clear: 
-	rm -rf $(CLASS) $(EXTRACT_DIR ) $(SERVER_JAR) $(CLIENT_JAR) data/users.json data/*tmp
+	rm -rf $(CLASS) $(EXTRACT_DIR ) $(SERVER_JAR) $(CLIENT_JAR) data/users.json data/reviews.json data/*tmp data/**/*tmp
 	clear
+
+runTest: $(SERVER_JAR) $(CLIENT_JAR)
+	@gnome-terminal  -- bash -c "make runServer; exec bash"
+	@sleep 0.5 
+	@gnome-terminal  -- bash -c "make runClient; exec bash"

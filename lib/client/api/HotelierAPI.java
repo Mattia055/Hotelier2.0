@@ -2,7 +2,6 @@ package lib.client.api;
 
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Type;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.ByteBuffer;
@@ -10,14 +9,12 @@ import java.util.ArrayList;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-
 import lib.share.packet.Request;
 import lib.share.packet.Response;
 import lib.share.packet.Request.Method;
+import lib.share.security.HashUtils;
 import lib.share.struct.HotelDTO;
 import lib.share.struct.Score;
-import lib.share.typeAdapter.RequestTypeAdapter;
 import lib.share.typeAdapter.ResponseTypeAdapter;
 
 public class HotelierAPI {
@@ -28,20 +25,7 @@ public class HotelierAPI {
     private Socket          socket;
     private OutputStream    out;
     private InputStream     in;
-    private static final Type RequestT;
-    private static final Type ResponseT;
-    private static final Type ScoreT;
-    private static final Type HotelDTOListT;
-    private static final Type HotelDTOT;
     private boolean fetch_init = false;
-
-    static{
-        RequestT        = new TypeToken<Request>(){}.getType();
-        ResponseT       = new TypeToken<Response>(){}.getType();
-        ScoreT          = new TypeToken<Score>(){}.getType();
-        HotelDTOT       = new TypeToken<HotelDTO>(){}.getType();
-        HotelDTOListT   = new TypeToken<HotelDTO[]>(){}.getType();
-    }
     
     public HotelierAPI(String serverAddress, int serverPort) {
         this.serverAddress = serverAddress;
@@ -129,17 +113,25 @@ public class HotelierAPI {
     }
 
     private APIResponse HandleUserOperation(String username, String password, Method override) throws CommunicationException, ResponseParsingException {
+        if(username == null || username.trim().isEmpty())
+            return new APIResponse(Status.INVALID_PARAMETER, "The username is invalid: Allowed characters: (A-Z, a-z), (0-9), (_), (-)");
+        else if(password == null || password.trim().isEmpty())
+            return new APIResponse(Status.INVALID_PARAMETER, "Password cannot be empty");
         Request request = new Request(override, username.trim());
         sendRequest(request);
 
         Response response = getResponse();
+
         if(response.getStatus() == Response.Status.FAILURE){
             return new APIResponse(response.getError());
         }
 
+        String salt = response.getData().toString();
+        password = HashUtils.computeSHA256Hash(password, salt);
+
         //inserisce la password
 
-        request.setData(password.trim());
+        request.setData(password);
         sendRequest(request);
         response = getResponse();
         return new APIResponse(response.getError());
@@ -238,10 +230,10 @@ public class HotelierAPI {
         if(response.getStatus() == Response.Status.FAILURE){
             return new APIResponse(response.getError());
         }
-        
         /*Invio seconda richiesta inserendo il punteggio dell'hotel */
-        request = new Request(Method.REVIEW, gson.toJson(RevScore,ScoreT));
+        request = new Request(Method.REVIEW, RevScore);
         //meglio di usare un if statement con Status.OK tanto NO_ERR viene mappato in Status.OK
+        sendRequest(request);        
         return new APIResponse(getResponse().getError());
 
     }
@@ -327,12 +319,16 @@ public class HotelierAPI {
         boolean success = false;
         try{
             while(response.getStatus() == Status.FETCH_LEFT){
-                hotels.addAll(response.getHotelList());
+                for(HotelDTO hotel : response.getHotelList()){
+                    hotels.add(hotel);
+                }
                 response = HotelsFetch();
             }
 
             if(response.getStatus() == Status.FETCH_DONE){
-                hotels.addAll(response.getHotelList());
+                for(HotelDTO hotel : response.getHotelList()){
+                    hotels.add(hotel);
+                }
                 success = true;
             }
 

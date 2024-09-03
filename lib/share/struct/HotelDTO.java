@@ -6,28 +6,28 @@ import java.util.Arrays;
 
 public class HotelDTO{
 
-    //private int         id; esempio di campo che preferirei non trasferire
-    private String      name;
-    private String      description;
-    private String      city;
-    private String      phone;
-    private String[]    services;
-    //this gets modified when ranking manager updates the score
-    private Score       rating;
+    //public int         id; esempio di campo che preferirei non trasferire
+    public String      name;
+    public String      description;
+    public String      city;
+    public String      phone;
+    public String[]    services;
+    public double      rank;
+    public Score       rating;
+    public int         rank_position = -1;
+    
 
-    public HotelDTO (String name, String description, String city, String phone, String[] services, Score rating) {
+    public HotelDTO (String name, String description, String city, String phone, String[] services, double rank,Score rating,int rank_position) {
         //this.id         = id;
         this.name       = name;
         this.description= description;
         this.city       = city;
         this.phone      = phone;
         this.services   = services;
+        this.rank       = rank;
         this.rating     = rating;
+        this.rank_position = rank_position;
     }
-    /*
-    public int getID(){
-        return id;
-    }*/
 
     public String getName(){
         return name;
@@ -53,8 +53,8 @@ public class HotelDTO{
         return rating;
     }
 
-    public void setRating(Score newRating){
-        rating = newRating;
+    public double getRank(){
+        return rank;
     }
 
     @Override
@@ -71,9 +71,14 @@ public class HotelDTO{
         } else {
             str.append("Services: N/A\n");
         }
-        
+        if(rank_position != -1){
+            str.append("Rank Position: " + rank_position + "\n");
+        if(rank != -1){
+            str.append("Rank: " + rank + "\n");
+        }
+        }
         if (rating != null) {
-            str.append("\nRating\n" + rating.toString());
+            str.append("Rating\n" + rating.toString());
         } else {
             str.append("\nRating: N/A\n");
         }

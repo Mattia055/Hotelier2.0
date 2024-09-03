@@ -2,7 +2,7 @@ package lib.share.struct;
 
 public class Score implements Cloneable{
     protected static final double MAX_GRADE = 5;
-    protected static final double MIN_GRADE = 1; 
+    protected static final double MIN_GRADE = 0; 
 
     private double Position;
     private double Cleaning;
@@ -80,23 +80,23 @@ public class Score implements Cloneable{
     }
 
     public void setService(double Service){
-        this.Service = Service;
+        this.Service = Math.round(Service * 100.0) / 100.0;
     }
 
     public void setPrice(double Price){
-        this.Price = Price;
+        this.Price = Math.round(Price * 100.0) / 100.0;
     }   
     
     public void setPosition(double Position){
-        this.Position = Position;
+        this.Position = Math.round(Position * 100.0) / 100.0;
     }
 
     public void setCleaning(double Cleaning){
-        this.Cleaning = Cleaning;
+        this.Cleaning = Math.round(Cleaning * 100.0) / 100.0;
     }
 
     public void setGlobal(double Global){
-        this.Global = Global;
+        this.Global = Math.round(Global * 100.0) / 100.0;
     }
 
     public static double getMin(){

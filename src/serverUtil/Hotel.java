@@ -14,16 +14,20 @@ public class Hotel{
     private String      phone;
     private String[]    services;
     //this gets modified when ranking manager updates the score
-    private Score       rating;
+    protected double      rank;
+    protected Score       rating;
+    protected int         rank_position;
 
-    public Hotel (int id, String name, String description, String city, String phone, String[] services, Score rating) {
+    public Hotel (int id, String name, String description, String city, String phone, String[] services, double rank,Score rating,int rank_position) {
         this.id         = id;
         this.name       = name;
         this.description= description;
         this.city       = city;
         this.phone      = phone;
         this.services   = services;
+        this.rank       = rank;
         this.rating     = rating;
+        this.rank_position = rank_position;
     }
 
     public int getID(){
@@ -46,8 +50,16 @@ public class Hotel{
         return phone;
     }
 
+    public int getRankPosition(){
+        return rank_position;
+    }
+
     public String[] getServices(){
         return services;
+    }
+
+    public double getRank(){
+        return rank;
     }
 
     public Score getRating(){
@@ -56,6 +68,7 @@ public class Hotel{
 
     public void setRating(Score newRating){
         rating = newRating;
+        rank = rating.getMean();
     }
 
     @Override
@@ -83,7 +96,12 @@ public class Hotel{
     }
 
     public HotelDTO toDTO(){
-        return new HotelDTO(name, description, city, phone, services, rating);
+        try{
+        return new HotelDTO(name, description, city, phone, services.clone(), rank,rating.clone(),rank_position);
+        }catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }
