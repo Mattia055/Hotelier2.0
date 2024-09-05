@@ -3,10 +3,9 @@ package serverUtil;
 import java.nio.channels.SelectionKey;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 import java.util.regex.Pattern;
@@ -57,6 +56,8 @@ public class RequestHandler implements Runnable{
         HandlerTable.put(Method.LOGIN,          RequestHandler::handleLogin);
         HandlerTable.put(Method.LOGOUT,         RequestHandler::handleLogout);
         HandlerTable.put(Method.EXT_LOGOUT,     RequestHandler::handleExtLogout);
+        HandlerTable.put(Method.IS_LOGGED,      RequestHandler::handleIsLogged);
+        HandlerTable.put(Method.PEEK_HOTEL,       RequestHandler::handlePeek);
         HandlerTable.put(Method.SEARCH_HOTEL,   RequestHandler::handleSearch);
         HandlerTable.put(Method.SEARCH_ALL,     RequestHandler::handleSearchAll);
         HandlerTable.put(Method.REVIEW,         RequestHandler::handleReview);
@@ -149,6 +150,17 @@ public class RequestHandler implements Runnable{
         }
         return new Response(Status.SUCCESS);
     }
+
+    public static Response handleIsLogged(Request request, Session session) {
+        try{
+            if(LoggedTable.containsKey(session.Username))
+                return new Response(Status.SUCCESS);
+        }
+        catch(NullPointerException e){
+            session.flush();
+        }
+        return new Response(Error.NOT_LOGGED);
+    }
     
     public static Response handleSearch(Request request, Session session) {
         String[] data = (String[]) request.getData();
@@ -165,45 +177,61 @@ public class RequestHandler implements Runnable{
         }
     }
 
+    public static Response handlePeek(Request request, Session session) {
+        String[] data = (String[]) request.getData();
+        String city = data[0].toLowerCase().trim();
+        String hotel = data[1].trim();
+        
+        ArrayList<Hotel> hmap = HotelsTable.get(city);
+        if(hmap == null) return new Response(Error.NO_SUCH_CITY);
+        synchronized(hmap){
+            for(Hotel h : hmap){
+                if(h.getName().equals(hotel)) return new Response(Status.SUCCESS);
+            }
+            return new Response(Error.NO_SUCH_HOTEL);
+        }
+    }
+
     /*
      * La lista viene restituita al contrario quindi il rank manager deve ordinare
      * in ordine crescente
      */
     @SuppressWarnings("unchecked")
     public static Response handleSearchAll(Request request, Session session) {
-        ArrayList<HotelDTO> toReturn = null;
+        Queue<HotelDTO> toReturn = null;
         if(session.LastMethod != Method.SEARCH_ALL){
+            toReturn = new LinkedList<HotelDTO>();
             String city = ((String) request.getData()).toLowerCase().trim();
             ArrayList<Hotel> hmap = HotelsTable.get(city);
             if(hmap == null) return new Response(Error.NO_SUCH_CITY);
             //creo una copia in locale della lista
-            toReturn = null;
             synchronized(hmap){
-                toReturn = new ArrayList<HotelDTO>(hmap.size());
                 for(Hotel h : hmap){
                     System.out.println(h.getName());
                     toReturn.add(h.toDTO());
                 }
             }
+            session.setMethod(Method.SEARCH_ALL);
+            session.setData(toReturn);
         }
         //ho cachato la copia quindi posso recuperarla dalla sessione
         else{
             //l'unico caso in cui la sessione contiene un arrayList
-            if((session.getData() instanceof ArrayList<?>)){
-            toReturn = (ArrayList<HotelDTO>) session.getData();
+            if((session.getData() instanceof LinkedList<?>)){
+            toReturn = (LinkedList<HotelDTO>) session.getData();
             } else return new Response(Error.BAD_SESSION);
         }
-        int last_index = toReturn.size()-1;
+
         HotelDTO[] batch = new HotelDTO[DEF_BATCH_SIZE];
         //restituisco un batch di hotels
         for(int i = 0; i< DEF_BATCH_SIZE; i++){
-            if(last_index == -1)
-                break;
-            batch[i] = toReturn.remove(last_index--);
+            batch[i] = toReturn.poll();
+            if(batch[i] == null) break;
         }
         //se ho finito di inviare tutti gli hotel pulisco la sessione
-        if(last_index == -1){
+        if(toReturn.isEmpty()){
             session.clearData();
+            session.clearMethod();
             session.LastMethod = null;
             return new Response(Status.SUCCESS,batch);
         } else{
@@ -245,12 +273,16 @@ public class RequestHandler implements Runnable{
             try{
                 User u = UsersTable.get(username);
                 if(u.passwordTest(password)){
-                    LoggedTable.remove(username);
-                    return new Response(Status.SUCCESS);
+                    return LoggedTable.remove(username) == null ? 
+                        new Response(Error.NOT_LOGGED) : 
+                        new Response(Status.SUCCESS);
                 }
             } catch(NullPointerException e){
                 return new Response(Error.NO_SUCH_USER);
-            } 
+            } finally{
+                session.clearData();
+                session.clearMethod();
+            }
             return new Response(Error.BAD_PASSWD);
         }
     }
@@ -291,6 +323,7 @@ public class RequestHandler implements Runnable{
                 return new Response(Error.INVALID_REQUEST);
             } finally{
                 session.clearData();
+                session.clearMethod();
             }
         }
     }

@@ -8,7 +8,7 @@ import java.util.Base64;
 public class HashUtils {
 
     private static final SecureRandom random = new SecureRandom();
-    public static final int HASH_LEN = 256;
+    public static final int HASH_LEN = 64;
 
     /**
      * Generates a random salt.

@@ -75,19 +75,23 @@ public class HotelierAPI {
     private String read() throws CommunicationException {
         try {
             ByteBuffer lengthBuffer = ByteBuffer.allocate(Integer.BYTES);
+            //lettura bloccante [lungezza pacchetto]
             int bytesRead = in.read(lengthBuffer.array(), 0, Integer.BYTES);
             if (bytesRead != Integer.BYTES) {
                 throw new CommunicationException("Failed to read the length of the incoming data", null);
             }
             int length = lengthBuffer.getInt();
 
+            //alloca un byteArray per il pacchetto
             byte[] jsonBytes = new byte[length];
             bytesRead = 0;
             while (bytesRead < length) {
+                //fa letture bloccanti
                 int result = in.read(jsonBytes, bytesRead, length - bytesRead);
                 if (result == -1) {
                     throw new CommunicationException("Connection closed before all data was received", null);
                 }
+                //se ha finito di leggere tutti i bytes esce dal ciclo
                 bytesRead += result;
             }
             return new String(jsonBytes, "UTF-8");
@@ -110,6 +114,15 @@ public class HotelierAPI {
         } catch (Exception e) {
             throw new ResponseParsingException("Failed to parse response from server", e);
         }
+    }
+
+    public APIResponse HandleIsLogged() throws CommunicationException, ResponseParsingException {
+        Request request = new Request(Method.IS_LOGGED,null);
+        sendRequest(request);
+        Response response = getResponse();
+        return response.getStatus() == Response.Status.FAILURE ? 
+                                        new APIResponse(response.getError()) : 
+                                        new APIResponse(Status.OK);
     }
 
     private APIResponse HandleUserOperation(String username, String password, Method override) throws CommunicationException, ResponseParsingException {
@@ -185,6 +198,7 @@ public class HotelierAPI {
         sendRequest(new Request(Method.EXT_LOGOUT, null));
 
         return new APIResponse(getResponse().getError());
+        Easer Egg UwU 
     }*/
 
 
@@ -207,7 +221,7 @@ public class HotelierAPI {
 
         return response.getStatus() == Response.Status.FAILURE ? 
                                         new APIResponse(response.getError()) : 
-                                        new APIResponse(Status.OK, new String[]{(String) response.getData()});
+                                        new APIResponse(Status.OK, (response.getData()));
         
     }
 
@@ -241,12 +255,21 @@ public class HotelierAPI {
     public APIResponse HotelSearch(String City, String Hotel) throws CommunicationException, ResponseParsingException {
         /*API call to search for a hotel */
         Request request = new Request(Method.SEARCH_HOTEL, new String[]{City,Hotel});
-        System.out.println("CLASS NAME: " + request.getData().getClass().getSimpleName());
         sendRequest(request);
         Response response = getResponse();
         return response.getStatus() == Response.Status.FAILURE ? 
                                         new APIResponse(response.getError()) : 
                                         new APIResponse(Status.OK, (HotelDTO) response.getData()  );  
+    }
+
+    public APIResponse HotelPeek(String City, String Hotel) throws CommunicationException, ResponseParsingException {
+        /*API call to search for a hotel */
+        Request request = new Request(Method.SEARCH_HOTEL, new String[]{City,Hotel});
+        sendRequest(request);
+        Response response = getResponse();
+        return response.getStatus() == Response.Status.FAILURE ? 
+                                        new APIResponse(response.getError()) : 
+                                        new APIResponse(Status.OK);  
     }
 
     //public APIResponse HotelsFetch

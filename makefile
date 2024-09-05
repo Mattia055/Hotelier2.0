@@ -1,6 +1,7 @@
 LIB    		= lib
 JSON      	= $(LIB)/gson.jar
 JLINE	  	= $(LIB)/jline.jar
+JANSI	  	= $(LIB)/jansi.jar
 CONF      	= config
 META      	= META-INF
 SERVER_META = $(META)/SERVER.MF
@@ -54,11 +55,11 @@ $(SHARELIB_CLASSES): $(SHARELIB_SOURCES)
 $(CLIENTLIB_CLASSES): $(CLIENTLIB_SOURCES)  $(SHARELIB_CLASSES)
 	@echo -e $(COLOR)Compiling Client Libs ...$(RESET)
 	@mkdir -p $(CLASS)
-	$(JAVAC) $(JFLAGS) -d $(CLASS) -cp $(JSON):$(CLASS):$(JLINE) $(CLIENTLIB_SOURCES)
+	$(JAVAC) $(JFLAGS) -d $(CLASS) -cp $(JSON):$(CLASS):$(JLINE):$(JANSI) $(CLIENTLIB_SOURCES)
 
 $(CLIENT_CLASSES): $(CLIENT_SOURCES) $(CLIENTLIB_CLASSES) $(SHARELIB_CLASSES)
 	@echo -e $(COLOR)Compiling Client Core ...$(RESET)
-	$(JAVAC) $(JFLAGS) -d $(CLASS) -cp $(JSON):$(CLASS):$(JLINE) $(CLIENT_SRC)/*.java
+	$(JAVAC) $(JFLAGS) -d $(CLASS) -cp $(JSON):$(CLASS):$(JLINE):$(JANSI) $(CLIENT_SRC)/*.java
 
 $(CLIENT_JAR): $(CLIENT_CLASSES) $(CLIENTLIB_CLASSES) $(SHARELIB_CLASSES) $(CONF)/client.properties
 	@echo -e $(COLOR)Compiling Client.jar ...$(RESET)

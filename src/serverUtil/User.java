@@ -46,12 +46,13 @@ public class User {
          * @return Il grado corrispondente.
          */
         public static Badge getRankForExperience(int experience) {
+            Badge retval = null;
             for (Badge badge : values()) {
                 if (experience >= badge.getMinExperience()) {
-                    return badge;
+                    retval = badge;
                 }
             }
-            return REC; // Default grade if none matches
+            return retval == null ? REC : retval;
         }
     }
 

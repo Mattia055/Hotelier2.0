@@ -15,6 +15,8 @@ public class Request {
         REGISTER,
         LOGIN,
         LOGOUT,
+        PEEK_HOTEL,
+        IS_LOGGED,
         EXT_LOGOUT,
         SEARCH_HOTEL,
         SEARCH_ALL,

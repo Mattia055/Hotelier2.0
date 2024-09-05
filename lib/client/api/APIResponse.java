@@ -1,6 +1,5 @@
 package lib.client.api;
 
-import java.util.ArrayList;
 import java.util.EnumMap;
 
 
@@ -56,6 +55,7 @@ public class APIResponse {
 
     protected APIResponse(Error Error,String message, Object data) {
         this.status = statusMapping.get(Error);
+        this.message = status.getPhrase();
         if(this.status == null){
             //API error
             throw new IllegalArgumentException("Error not mapped to a status");
@@ -151,6 +151,15 @@ public class APIResponse {
     public HotelDTO[] getHotelList() {
         try{
             return (HotelDTO[]) data;
+        } catch (ClassCastException e){
+            return null;
+        }
+
+    }
+
+    public HotelDTO getHotel() {
+        try{
+            return (HotelDTO) data;
         } catch (ClassCastException e){
             return null;
         }

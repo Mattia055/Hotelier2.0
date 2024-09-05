@@ -2,8 +2,6 @@ package lib.share.typeAdapter;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;

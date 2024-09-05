@@ -7,15 +7,9 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
-import java.util.function.Function;
-
 import lib.share.struct.Score;
 
 /**
@@ -196,13 +190,16 @@ public class RankManager implements Runnable {
                 }
                 //ordinamento lista secondo il rank
                 //l'ultimo hotel della lista è quello che ha rank massimo
-                Collections.sort(hlist,(h1,h2) -> Double.compare(h1.rank, h2.rank));
+                Collections.sort(hlist,(h1,h2) -> Double.compare(h2.rank, h1.rank));
 
                 //aggiorno la posizione di ogni hotel
-                int i = hlist.size();
+                int i = 0;
                 for(Hotel h : hlist){
-                    h.rank_position = i--;
+                    h.rank_position = i+1;
+                    i++;
                 }
+
+            
             }
 
         if(hTop.getName().equals(hlist.get(hlist.size()-1).getName())){
@@ -220,7 +217,6 @@ public class RankManager implements Runnable {
         for(ArrayList<Hotel> hotels : HotelsTable.values()){
             UpdateTopHotel(hotels);
         }
-        System.out.println("Ranking updated");
     }
 
 
