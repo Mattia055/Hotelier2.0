@@ -7,15 +7,20 @@ import java.nio.charset.StandardCharsets;
 
 import lib.share.packet.Request.Method;
 
+/*
+ * Memorizza lo stato della connessione con un client
+ * 
+ * Mantiene un buffer per letture/scritture per la gestione
+ * di operazioni non bloccanti
+ */
 public class Session {
-    /*I buffer vengono gestiti internamente dalla sessione
-     * Quando si può leggere direttamente da una socket con Session.readFrom(SocketChannel)
-     * se il buffer è n
-     * 
+    /*
+     * Inizializza un buffer pool per il caching dei buffer
      */
-    private static final BufferPool pool;
-    private static final int MAX_SIZE;
+    private static final BufferPool pool;       
+    private static final int        MAX_SIZE;   //dimensione massima del pacchetto
 
+    //blocco static per i campi statici
     static{
         pool = new BufferPool(ServerContext.ALLOC_TRESHOLD, ServerContext.BUFFER_POOL_SIZE);
         MAX_SIZE = ServerContext.PACKET_LENGTH;
@@ -32,16 +37,19 @@ public class Session {
 
     public Session() {
         this.Username                   = null;
-        this.Data                = null;
+        this.Data                       = null;
         this.LastMethod                 = null;
         this.Message                    = null;
         this.Buffer                     = null;
+        //flag di sicurezza che evitano la sovrascrittura del buffer
         this.PendingBufferInit          = false;
         this.PendingMessageCollection   = false;
-        //alloco il buffer per la lunghezza del pacchetto
+        //buffer per la dimensione del pacchetto
         this.SizeBuffer     = ByteBuffer.allocate(Integer.BYTES);
     }
-
+    /*
+     * Getters | Setters
+     */
     public String getMessage() {
         PendingMessageCollection = false;
         return Message;
@@ -90,10 +98,22 @@ public class Session {
         this.LastMethod = null;
     }
 
+    /*
+     * Legge da un socket channel assumendo che venga inviato come primo
+     * elemento la dimensione del pacchetto restituendo true se la lettura 
+     * è completata
+     */
     public boolean readFrom(SocketChannel client) throws Exception{
+        /*
+         * Non permette nuove letture sullo stesso buffer
+         * finche il messaggio non viene estratto almeno 
+         * una volta
+         */
         if(PendingMessageCollection){
             return true;
         }
+        
+        //legge la dimensione del pacchetto
         if(SizeBuffer.hasRemaining()){
             if(client.read(SizeBuffer) == -1)
                 throw new ClosedChannelException();
@@ -103,28 +123,28 @@ public class Session {
             int length = SizeBuffer.getInt();
             if(length > MAX_SIZE)
                 throw new Exception("Packet too big");
+            //riceve un uffer e setta il limit alla lunghezza del pacchetto
             Buffer = pool.get(length);
             Buffer.clear();
             Buffer.limit(length);
         }
 
-        if(!Buffer.hasRemaining()){
-            return true;
-        }
-
-        if(client.read(Buffer) == -1)
+        //analogo a sopra
+        if(Buffer.hasRemaining()){
+            if(client.read(Buffer) == -1)
             throw new ClosedChannelException();
 
-        else if(!Buffer.hasRemaining()){
-            SizeBuffer.clear();
-            getMessageFromBuffer();
-            return true;
+            else if(!Buffer.hasRemaining()){
+                SizeBuffer.clear();
+                getMessageFromBuffer();
+            }
+            else return false;
         }
-
-        else return false;
+        return true;
 
     }
 
+    //analoga a ReadFrom
     public boolean writeTo(SocketChannel client) throws Exception {
         if(!PendingBufferInit){
             setBufferFromMessage();
@@ -151,26 +171,19 @@ public class Session {
         return true;
 
     }
-    /*Dal buffer scrive sul messaggio
-     * Non modifica il buffer
-    */
+    //Setta il campo Message a partire dal buffer
     private void getMessageFromBuffer() {
-        // Save the current position and limit of the buffer
+        // resetta la flag di sicurezza
         PendingBufferInit = false;
-        // Set the limit to the current position and flip the buffer for reading
         Buffer.flip();
-        // Decode the buffer content to string
         Message = StandardCharsets.UTF_8.decode(Buffer).toString();
-        // Restore the original position and limit of the buffer
     }
 
 
-    /*dal messaggio alloca un nuovo buffer*/
-    /*Non modifica il messaggio*/
     /*
-     * La flag boolean è presente perche normalmente a scrittura
-     * terminata il buffer viene rilasciato, se si tenta di riscrivere
-     * si deve risettare 
+     * Richiede un nuovo buffer al BufferPool e ci scrive dentro il 
+     * messaggio. Setta SizeBuffer alla dimensione del messaggio.
+     * Il buffer viene poi preparato per la scrittura
      */
     private void setBufferFromMessage(){
         byte[] MessageBytes = Message.getBytes(StandardCharsets.UTF_8);

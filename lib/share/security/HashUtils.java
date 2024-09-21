@@ -5,28 +5,27 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
 
+/*
+ * Classe singleton per l'hashing delle passowrd
+ */
 public class HashUtils {
 
-    private static final SecureRandom random = new SecureRandom();
-    public static final int HASH_LEN = 64;
+    //Generatore di numeri pseudo-casuale
+    private static  final SecureRandom random = new SecureRandom();
+    public static   final int HASH_LEN = 64;    //Lunghezza dell'hash (sha256) come stringa esadecimale
 
-    /**
-     * Generates a random salt.
-     * 
-     * @return the salt as a Base64 encoded string
-     */
+    
     public static String generateSalt(int length) {
         byte[] salt = new byte[length];
         random.nextBytes(salt);
         return Base64.getEncoder().encodeToString(salt);
     }
 
-    /**
-     * Computes the SHA-256 hash of the given input string with a salt.
+    /*
+     * Esegue l'hashing di una stringa con SHA-256
      * 
-     * @param input the string to hash
-     * @param salt the salt to add to the input
-     * @return the SHA-256 hash as a hexadecimal string
+     * @param input la stringa da hashare
+     * @param salt il sale da aggiungere alla stringa
      */
     public static String computeSHA256Hash(String input, String salt) {
         try {
@@ -34,27 +33,24 @@ public class HashUtils {
             byte[] inputBytes = (input + salt).getBytes();
             byte[] hashBytes = digest.digest(inputBytes);
             return bytesToHex(hashBytes);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("SHA-256 algorithm not found", e);
+        } catch (NoSuchAlgorithmException e) {  //non dovrebbe mai accadere
+            throw new RuntimeException("Algoritmo SHA-256 non trovato", e);
         }
     }
 
-    /**
-     * Converts a byte array to a hexadecimal string.
-     * 
-     * @param bytes the byte array
-     * @return the hexadecimal string
+    /*
+     * Converte un array di byte in una stringa esadecimale
      */
     private static String bytesToHex(byte[] bytes) {
-        StringBuilder hexString = new StringBuilder();
+        StringBuilder Hex = new StringBuilder();
         for (byte b : bytes) {
             String hex = Integer.toHexString(0xff & b);
             if (hex.length() == 1) {
-                hexString.append('0');
+                Hex.append('0');
             }
-            hexString.append(hex);
+            Hex.append(hex);
         }
-        return hexString.toString();
+        return Hex.toString();
     }
 
 }

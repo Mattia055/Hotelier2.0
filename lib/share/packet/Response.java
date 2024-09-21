@@ -2,19 +2,18 @@ package lib.share.packet;
 import lib.share.struct.Score;
 
 /**
- * Represents a response from the server, including status and error codes.
+ * Rappresenta una risposta del server
  */
 public class Response {
 
     /**
-     * Enum representing the possible status codes for a response.
+     * Enum che rappresenta gli stati di una risposta
      */
     public static enum Status {
-        READY,        // Indicates that server is ready for requests  
+        READY,        // Indicates that server is ready for requests  [Non Utilizzato]
         SUCCESS,      // Indicates that the operation was successful
         FAILURE,      // Indicates that the operation failed
         AWAIT_INPUT,  // Indicates that additional input is required
-        AWAIT_ELAB    // Indicates that the data in payload is significant  
     }
 
     /**
@@ -35,11 +34,11 @@ public class Response {
         NOT_LOGGED          ("User is not logged in"),
         SECUR_ALREADY_SET   ("Probe error used to see if user setted his security questions"),
         BAD_SESSION         ("The session is not valid or has expired"),
-        SCORE_GLOBAL        ("The global score needs to be between "    + Score.getMin() + " and " + Score.getMax()),
-        SCORE_POSITION      ("The position score needs to be between "  + Score.getMin() + " and " + Score.getMax()),
-        SCORE_CLEANING      ("The cleaning score needs to be between "  + Score.getMin() + " and " + Score.getMax()),
-        SCORE_PRICE         ("The price score needs to be between "     + Score.getMin() + " and " + Score.getMax()),
-        SCORE_SERVICE       ("The service score needs to be between "   + Score.getMin() + " and " + Score.getMax()),
+        SCORE_GLOBAL        ("The global score needs to be between "    + Score.min + " and " + Score.max),
+        SCORE_POSITION      ("The position score needs to be between "  + Score.min + " and " + Score.max),
+        SCORE_CLEANING      ("The cleaning score needs to be between "  + Score.min + " and " + Score.max),
+        SCORE_PRICE         ("The price score needs to be between "     + Score.min + " and " + Score.max),
+        SCORE_SERVICE       ("The service score needs to be between "   + Score.min + " and " + Score.max),
         INVALID_PARAMETER   ("Parameter invalid"),
         SERVER_ERROR        ("An error occurred on the server. Your request could not be processed.");
 

@@ -5,32 +5,34 @@ import java.time.LocalDateTime;
 
 
 
-/**
- * Rappresenta una recensione per un hotel.
+/*
+ * Rappresenta una recensione di un Hotel
  */
 public class Review {
 
-    protected int HotelId;         // Identificativo dell'hotel recensito
-    protected String Username;     // Nome utente del recensore
-    protected int UserExp;         // Esperienza dell'utente (ad esempio, livello o punti)
-    protected Score ReviewScore;   // Punteggio della recensione
-    protected LocalDateTime Time;  // Data e ora della recensione
+    protected int HotelId;              // Identificativo dell'hotel recensito
+    protected String Username;          // Nome utente del recensore
+    protected int UserExp;              // Esperienza dell'utente (ad esempio, livello o punti)
+    protected Score ReviewScore;        // Punteggio della recensione
+    protected LocalDateTime Added;      // Data e ora della recensione
+    protected LocalDateTime Counted;
 
     /**
      * Costruttore per la classe Review.
      *
-     * @param HotelId Identificativo dell'hotel recensito.
-     * @param username Nome utente del recensore.
-     * @param userExp Esperienza dell'utente.
-     * @param time Data e ora della recensione.
-     * @param revScore Punteggio della recensione.
+     * @param HotelId   Identificativo dell'hotel recensito.
+     * @param username  Nome utente del recensore.
+     * @param userExp   Esperienza dell'utente.
+     * @param time      Data e ora della recensione.
+     * @param revScore  Punteggio della recensione.
      */
     public Review(int HotelId, String username, int userExp, LocalDateTime time, Score revScore) {
-        this.HotelId = HotelId;
-        this.Username = username;
-        this.UserExp = userExp;
-        this.ReviewScore = revScore;
-        this.Time = time;
+        this.HotelId        = HotelId;
+        this.Username       = username;
+        this.UserExp        = userExp;
+        this.ReviewScore    = revScore;
+        this.Added          = time;
+        this.Counted    = null;
     }
 
     /**
@@ -65,8 +67,21 @@ public class Review {
      *
      * @return La data e ora della recensione.
      */
-    public LocalDateTime getTime() {
-        return Time;
+    public LocalDateTime getAdded() {
+        return Added;
+    }
+
+    /*
+     * Setter del Timestamp di conteggio della recensione
+     * Viene settato dal RankManager quando la recensione 
+     * viene conteggiata
+     */
+    protected void setCounted(LocalDateTime time){
+        Counted = time;
+    }
+
+    protected void SetCounted(){
+        Counted = LocalDateTime.now();
     }
 
     /**

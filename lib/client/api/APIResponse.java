@@ -25,11 +25,11 @@ public class APIResponse {
         statusMapping.put(Error.NOT_LOGGED,     Status.NOT_LOGGED       );
         statusMapping.put(Error.SCORE_GLOBAL,   Status.SCORE_GLOBAL     );
         statusMapping.put(Error.SCORE_POSITION, Status.SCORE_POSITION   );
-        statusMapping.put(Error.SCORE_CLEANING, Status.SCORE_CLEANING   );
-        statusMapping.put(Error.SCORE_PRICE,    Status.SCORE_PRICE      );
-        statusMapping.put(Error.SCORE_SERVICE,  Status.SCORE_SERVICE    );
-        statusMapping.put(Error.NO_ERR,         Status.OK               );
-        statusMapping.put(Error.BAD_SESSION,    Status.SERVER_ERROR     );
+        statusMapping.put(Error.SCORE_CLEANING, Status.SCORE_CLEANING       );
+        statusMapping.put(Error.SCORE_PRICE,    Status.SCORE_PRICE          );
+        statusMapping.put(Error.SCORE_SERVICE,  Status.SCORE_SERVICE        );
+        statusMapping.put(Error.NO_ERR,         Status.OK                   );
+        statusMapping.put(Error.BAD_SESSION,    Status.SERVER_ERROR         );
         statusMapping.put(Error.INVALID_PARAMETER, Status.INVALID_PARAMETER);
         statusMapping.put(Error.SERVER_ERROR,   Status.SERVER_ERROR     );
     }
@@ -175,11 +175,6 @@ public class APIResponse {
         }
     }
 
-
-    /*Da cambiare
-     * Aggiungere string builder per effettuare il casting del data Object in base allo status della richiesta
-     * 
-    */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

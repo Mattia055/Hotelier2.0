@@ -1,7 +1,7 @@
 package lib.client.api;
-
 import lib.share.packet.Response.Error;
 
+//enum che mappa lo stato delle risposte API
 public enum Status {
         OK                      ("The operation was successful"),
         INVALID_PARAMETER       (Error.INVALID_PARAMETER.getMnemonic()),

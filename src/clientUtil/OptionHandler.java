@@ -1,4 +1,4 @@
-package lib.client.cli;
+package clientUtil;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -9,12 +9,13 @@ import java.util.function.Supplier;
 import org.jline.keymap.BindingReader;
 import org.jline.keymap.KeyMap;
 import org.jline.terminal.Terminal;
-import org.jline.utils.NonBlockingReader;
-
 import lib.client.api.APIResponse;
 import lib.client.api.HotelierAPI;
 import lib.client.api.Status;
+import lib.client.cli.Ansi;
+import lib.client.cli.Option;
 import lib.share.struct.HotelDTO;
+import lib.share.struct.Score;
 
 public class OptionHandler {
     private static OptionHandler instance = null;
@@ -25,11 +26,11 @@ public class OptionHandler {
     private static HotelierAPI entryPoint;
 
     private OptionHandler() {
-        CliHandler.getInstance();
-        terminal = CliHandler.terminal;
-        writer = CliHandler.writer;
-        keyMap = CliHandler.keyMap;
-        entryPoint = CliHandler.EntryPoint;
+        TuiHandler.getInstance();
+        terminal = TuiHandler.terminal;
+        writer = TuiHandler.writer;
+        keyMap = TuiHandler.keyMap;
+        entryPoint = TuiHandler.EntryPoint;
         initializeOptionMap();
     }
 
@@ -47,6 +48,7 @@ public class OptionHandler {
         optionMap.put(Option.FULL_LOGOUT, FullLogout::new);
         optionMap.put(Option.SEARCH_H, SearchHotel::new);
         optionMap.put(Option.FETCH_H, FetchHotels::new);
+        optionMap.put(Option.REVIEW, InsertReview::new);
     }
 
     public static Runnable handle(Option option) {
@@ -57,12 +59,12 @@ public class OptionHandler {
     private static void appendMenuEntry(StringBuilder buffer, String label, String value, boolean isHighlighted, boolean isButton) {
         String formattedValue = isButton ? "" : value;
         String highlightStart = isHighlighted ? Ansi.HIGHLIGHT + " " : "";
-        String highlightEnd = isHighlighted ? " " + Ansi.RESET + (isButton ? "" : " : ") : " ";
+        String highlightEnd = isHighlighted ? " " + Ansi.RESET + (isButton ? "" : " :\t") : "\t\t";
 
         buffer.append(highlightStart)
               .append(label)
               .append(highlightEnd)
-              .append("\t" + formattedValue);
+              .append(formattedValue);
 
         if (isHighlighted && !isButton) buffer.append("_");
         buffer.append("\n\n");
@@ -104,9 +106,9 @@ public class OptionHandler {
         protected String message;
 
         public BaseMenu() {
-            CliHandler.getInstance();
+            TuiHandler.getInstance();
             terminal = OptionHandler.terminal;
-            reader = CliHandler.bindingReader;
+            reader = TuiHandler.bindingReader;
             writer = OptionHandler.writer;
             menuBuffer = new StringBuilder();
             returnToMenu = false;
@@ -122,29 +124,34 @@ public class OptionHandler {
         }
 
         protected void Terminate(String message) {
-            CliHandler.TerminationMessage = message;
+            TuiHandler.TerminationMessage = message;
             System.exit(-1);
         }
 
         protected void setMessageOnReturn(String message){
-            CliHandler.LastOpMessage = message;
+            TuiHandler.LastOpMessage = message;
         }
 
         protected void displayMenu() {
+            String notification = ClientMain.fetchNotification();
+            if (!notification.isEmpty()) {
+                menuBuffer.append("\n\n").append(Ansi.YELLOW).append(notification).append(Ansi.RESET);
+            }
+            writer.print(Ansi.RESET + Ansi.CLEAR);
             writer.print(menuBuffer.toString());
             menuBuffer.setLength(0);
             terminal.flush();
         }
 
         protected void flipOptionSet() {
-            CliHandler.OptionSet = CliHandler.OptionSet == Option.base() ? Option.logged() : Option.base();
+            TuiHandler.OptionSet = TuiHandler.OptionSet == Option.base() ? Option.logged() : Option.base();
         }
     }
 
     // Registration class
     public static class Registration extends BaseMenu {
-        private final StringBuilder username = new StringBuilder();
-        private final StringBuilder password = new StringBuilder();
+        private final StringBuilder username        = new StringBuilder();
+        private final StringBuilder password        = new StringBuilder();
         private final StringBuilder confirmPassword = new StringBuilder();
 
         @Override
@@ -208,11 +215,11 @@ public class OptionHandler {
         private void displayRegisterMenu() {
             menuBuffer.append(Ansi.CLEAR)
                       .append("Registration Menu\n\n");
-            appendMenuEntry(menuBuffer, "Username", username.toString(), index == 0);
-            appendMenuEntry(menuBuffer, "Password", maskInput(password), index == 1);
-            appendMenuEntry(menuBuffer, "Confirm", maskInput(confirmPassword), index == 2);
-            appendMenuEntry(menuBuffer, "REGISTER", "", index == 3, true);
-            appendMenuEntry(menuBuffer, "BACK TO MAIN MENU", "", index == 4, true);
+            appendMenuEntry(menuBuffer, " Username ", username.toString(), index == 0);
+            appendMenuEntry(menuBuffer, " Password ", maskInput(password), index == 1);
+            appendMenuEntry(menuBuffer, " Confirm ", maskInput(confirmPassword), index == 2);
+            appendMenuEntry(menuBuffer, " REGISTER ", "", index == 3, true);
+            appendMenuEntry(menuBuffer, " BACK TO MAIN MENU ", "", index == 4, true);
             menuBuffer.append("\n").append(message);
             message = "";
             displayMenu();
@@ -256,6 +263,7 @@ public class OptionHandler {
                 }
                 if(response.getStatus() == Status.OK){
                     flipOptionSet();
+                    ClientMain.UDPSubscriber.startUDPlistening();
                 }
                 setMessageOnReturn(response.getStatus() == Status.OK
                     ? Ansi.GREEN + "Login successful!" + Ansi.RESET
@@ -294,13 +302,11 @@ public class OptionHandler {
         }
 
     }
-
     // SearchHotel class
 public static class SearchHotel extends BaseMenu {
     private final StringBuilder hotelName = new StringBuilder();
     private final StringBuilder city = new StringBuilder();
     private final StringBuilder result = new StringBuilder();
-    private boolean searchSuccess = false;
 
     @Override
     public void run() {
@@ -344,7 +350,6 @@ public static class SearchHotel extends BaseMenu {
             if (response.getStatus() == Status.OK) {
                 //message = Ansi.GREEN + "Hotels found: " + response.getData().length + Ansi.RESET;
                 // Optionally display hotel details here...
-                searchSuccess = true;
                 displayHotel(response.getHotel());
                 return;
             } else {
@@ -355,7 +360,7 @@ public static class SearchHotel extends BaseMenu {
 
     private void displayHotel(HotelDTO hotel){
         result  .append(Ansi.CLEAR)
-                .append("Press ESC to return to main menu\n\n")
+                .append("Press ENTER to return to main menu\n\n")
                 .append(hotel.toString());
         writer.print(result.toString());
         result.setLength(0);
@@ -385,8 +390,8 @@ public static class SearchHotel extends BaseMenu {
     private void displaySearchHotelMenu() {
         menuBuffer.append(Ansi.CLEAR)
                   .append("Hotel Search Menu\n\n");
-        appendMenuEntry(menuBuffer, "Hotel Name", hotelName.toString(), index == 0);
-        appendMenuEntry(menuBuffer, "City", city.toString(), index == 1);
+        appendMenuEntry(menuBuffer, "Hotel", hotelName.toString(), index == 0);
+        appendMenuEntry(menuBuffer, "City",city.toString(), index == 1);
         appendMenuEntry(menuBuffer, "SEARCH", "", index == 2, true);
         appendMenuEntry(menuBuffer, "BACK TO MAIN MENU", "", index == 3, true);
         menuBuffer.append("\n").append(message);
@@ -563,6 +568,8 @@ public static class SearchHotel extends BaseMenu {
             writer.print(result.toString());
             result.setLength(0);
             terminal.flush();
+
+
         }
 
         private boolean FetchAdd(ArrayList<HotelDTO> list){
@@ -605,6 +612,178 @@ public static class SearchHotel extends BaseMenu {
             displayMenu();
         }
     }
+    
+    public static class InsertReview extends BaseMenu {
+        private final StringBuilder hotelName = new StringBuilder();
+        private final StringBuilder city = new StringBuilder();
+
+        private int[] scores = new int[5];
+        private String[] scoreLabels = {"Global","Cleaning","Position","Price","Service"};
+
+    
+        @Override
+        public void run() {
+            while (!returnToMenu) {
+                displaySearchMenu();
+                String key = reader.readBinding(keyMap);
+                if (key == null) continue;
+    
+                navigateMenu(4, key);
+    
+                switch (key) {
+                    case "ENTER":
+                        if (index == 2){
+                            handleReviewProbe();
+                            index = 0;
+                            city.setLength(0);
+                            hotelName.setLength(0);
+                        }
+                        else if (index == 3) returnToMenu = true;
+                        break;
+                    case "SPACE": handleInput(" "); break;
+                    case "BACKSPACE": handleBackspace(); break;
+                    default: handleInput(key); break;
+                }
+            }
+        }
+    
+        private void handleReviewProbe() {
+            if (hotelName.length() == 0 || city.length() == 0) {
+                message = Ansi.RED + "Please fill all fields" + Ansi.RESET;
+            } else {
+                APIResponse response = null;
+                try{
+                    //System.out.println("Searching for hotels...");
+                    //Thread.sleep(5000);
+                    response = entryPoint.HotelPeek(city.toString(),hotelName.toString());
+                } catch (Exception e) {
+                    Terminate(Ansi.RED + "Search failed: " + getStackTraceAsString(e) + Ansi.RESET);
+                }
+                if (response.getStatus() == Status.OK) {
+                    //message = Ansi.GREEN + "Hotels found: " + response.getData().length + Ansi.RESET;
+                    // Optionally display hotel details here...
+                    // insert review displayHotel(response.getHotel());
+                    handleScoreInput();
+                    return;
+                } else {
+                    message = Ansi.RED + "Search failed: " + response.getMessage() + Ansi.RESET;
+                }
+            }
+        }
+    
+        private void handleBackspace() {
+            switch (index) {
+                case 0: deleteLastCharacter(hotelName); break;
+                case 1: deleteLastCharacter(city); break;
+            }
+        }
+    
+        private void handleInput(String key) {
+            if (key.length() == 1) {
+                switch (index) {
+                    case 0: hotelName.append(key); break;
+                    case 1: city.append(key); break;
+                }
+            }
+        }
+
+        private String showStars(int count){
+            StringBuilder stars = new StringBuilder();
+            stars.append(Ansi.YELLOW);
+            for(int i = 0; i < count; i++){
+                stars.append("⭐ ");
+            }
+            stars.append(Ansi.RESET);
+            return stars.toString();
+        }
+    
+        private void displaySearchMenu() {
+            menuBuffer.append(Ansi.CLEAR)
+                      .append("Hotel Search Menu\n\n");
+            appendMenuEntry(menuBuffer, "Hotel", hotelName.toString(), index == 0);
+            appendMenuEntry(menuBuffer, "City",city.toString(), index == 1);
+            appendMenuEntry(menuBuffer, "SELECT", "", index == 2, true);
+            appendMenuEntry(menuBuffer, "BACK TO MAIN MENU", "", index == 3, true);
+            menuBuffer.append("\n").append(message);
+            message = "";
+            displayMenu();
+        }
+
+        private void displayScoreMenu(){
+            menuBuffer  .append(" INSERTING REVIEW\n\n")
+                        .append(Ansi.BLUE+"Hotel: "+Ansi.RESET + hotelName.toString() +Ansi.BLUE+" City: "+Ansi.RESET+city.toString()+ "\n\n");
+
+            for(int i = 0; i < 5; i++){
+                //sottolineato
+                if((index == 3 && i == 3)){
+                    menuBuffer.append(Ansi.HIGHLIGHT+" "+scoreLabels[i]+" "+Ansi.RESET+"\t\t"+showStars(scores[i])+"\n\n");
+                } 
+                else if(index == i){
+                    menuBuffer.append(Ansi.HIGHLIGHT+" "+scoreLabels[i]+" "+Ansi.RESET+"\t"+showStars(scores[i])+"\n\n");
+                }
+                else if(i == 0 || i == 3 || i==4){
+                    menuBuffer.append(scoreLabels[i]+"\t\t"+showStars(scores[i])+"\n\n");
+                } else menuBuffer.append(scoreLabels[i]+"\t"+showStars(scores[i])+"\n\n");
+            }
+            menuBuffer.append("\n");
+            appendMenuEntry(menuBuffer, " SUBMIT ", "", index == 5, true);
+            appendMenuEntry(menuBuffer, " BACK TO MAIN MENU ", "", index == 6, true);
+            menuBuffer.append("\n"+message);
+            displayMenu();
+
+        }
+
+        private void handleScoreInput(){
+            for(int i = 0; i < 5; i++){ scores[i] = 0;}
+            index = 0;
+            while(true){
+                displayScoreMenu();
+                String key = reader.readBinding(keyMap);
+                if(key == null) continue;
+                navigateMenu(7,key);
+                switch(key){
+                    case "ENTER":
+                        if(index == 6) return;
+                        else if(index == 5){
+                            //chiamata API
+                            APIResponse response = null;
+                            Score score = new Score(scores[0],scores[1],scores[2],scores[3],scores[4]);
+                            try{
+                                response = entryPoint.InsertReview(city.toString(),hotelName.toString(),score);
+                            } catch (Exception e) {
+                                Terminate(Ansi.RED + "Review failed: " + getStackTraceAsString(e) + Ansi.RESET);
+                            }
+                            if(response.getStatus() == Status.OK){
+                                message = Ansi.GREEN + "Review Inserted!" + Ansi.RESET;
+                            } else {
+                                message = Ansi.RED + "Review failed: " + response.getMessage() + Ansi.RESET;
+                            }
+                            return;
+                        } break;
+                    case "BACKSPACE": case "LEFT":{
+                        if(index >=0 && index < 5){
+                            if(scores[index] > 0) scores[index] -= 1;
+                            else{
+                                message = Ansi.RED + "Score cannot be negative" + Ansi.RESET;
+                            }
+                        }
+                    } break;
+                    case "RIGHT": {
+                        if(index >=0 && index < 5){
+                            if(scores[index] < 5) scores[index] += 1;
+                            else{
+                                message = Ansi.RED + "Score cannot be greater than 5" + Ansi.RESET;
+                            }
+                        } 
+                    } break;
+                }
+            }
+        }
+
+    }
+
+    
+    
 
     
     

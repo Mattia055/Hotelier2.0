@@ -15,14 +15,8 @@
       "Piscina"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 1
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 78,
@@ -38,14 +32,8 @@
       "Paga in struttura"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 2
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 80,
@@ -62,14 +50,8 @@
       "Frigo in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 3
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 77,
@@ -87,14 +69,8 @@
       "TV in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 4
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 76,
@@ -110,14 +86,8 @@
       "Servizio in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 5
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 75,
@@ -129,14 +99,8 @@
       "Servizio in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 6
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 74,
@@ -151,14 +115,8 @@
       "Wi-Fi"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 7
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 73,
@@ -173,14 +131,8 @@
       "Wi-Fi"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 8
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 72,
@@ -190,14 +142,8 @@
     "phone": "376-6994764",
     "services": [],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 9
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 71,
@@ -216,76 +162,25 @@
       "Wi-Fi"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 10
+    "rating": null,
+    "rank_position": 0
   },
   {
-    "id": 112,
-    "name": "Hotel Roma 2",
-    "description": "Un grazioso hotel a Roma, in Via Italia, 66",
+    "id": 117,
+    "name": "Hotel Roma 7",
+    "description": "Un organizzato hotel a Roma, in Via del tramonto, 63",
     "city": "Roma",
-    "phone": "358-3136682",
-    "services": [
-      "Piscina",
-      "Frigo in camera",
-      "Posto auto"
-    ],
-    "rank": 0.0,
+    "phone": "369-4805335",
+    "services": [],
+    "rank": 3.38,
     "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
+      "Position": 3.38,
+      "Cleaning": 3.38,
+      "Service": 3.38,
+      "Price": 3.38,
+      "Global": 3.38
     },
     "rank_position": 1
-  },
-  {
-    "id": 111,
-    "name": "Hotel Roma 1",
-    "description": "Un bellissimo hotel a Roma, in Via Italia, 69",
-    "city": "Roma",
-    "phone": "341-6349001",
-    "services": [
-      "Posto auto"
-    ],
-    "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 2
-  },
-  {
-    "id": 120,
-    "name": "Hotel Roma 10",
-    "description": "Un organizzato hotel a Roma, in Via Italia, 40",
-    "city": "Roma",
-    "phone": "365-2051697",
-    "services": [
-      "Sauna",
-      "Frigo in camera",
-      "Cancellazione gratuita",
-      "Piscina"
-    ],
-    "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 3
   },
   {
     "id": 114,
@@ -301,53 +196,15 @@
       "TV in camera",
       "Paga in struttura"
     ],
-    "rank": 0.0,
+    "rank": 1.88,
     "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
+      "Position": 1.88,
+      "Cleaning": 1.88,
+      "Service": 1.88,
+      "Price": 1.88,
+      "Global": 1.88
     },
-    "rank_position": 4
-  },
-  {
-    "id": 113,
-    "name": "Hotel Roma 3",
-    "description": "Un grazioso hotel a Roma, in Via della fantasia, 1",
-    "city": "Roma",
-    "phone": "332-1286644",
-    "services": [],
-    "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 5
-  },
-  {
-    "id": 116,
-    "name": "Hotel Roma 6",
-    "description": "Un bellissimo hotel a Roma, in Via del tramonto, 4",
-    "city": "Roma",
-    "phone": "366-3384420",
-    "services": [
-      "Cancellazione gratuita",
-      "TV in camera",
-      "Wi-Fi"
-    ],
-    "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 6
+    "rank_position": 2
   },
   {
     "id": 115,
@@ -361,15 +218,85 @@
       "Cancellazione gratuita",
       "Paga in struttura"
     ],
-    "rank": 0.0,
+    "rank": 0.94,
     "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
+      "Position": 0.94,
+      "Cleaning": 0.94,
+      "Service": 0.94,
+      "Price": 0.94,
+      "Global": 0.94
     },
+    "rank_position": 3
+  },
+  {
+    "id": 112,
+    "name": "Hotel Roma 2",
+    "description": "Un grazioso hotel a Roma, in Via Italia, 66",
+    "city": "Roma",
+    "phone": "358-3136682",
+    "services": [
+      "Piscina",
+      "Frigo in camera",
+      "Posto auto"
+    ],
+    "rank": 0.0,
+    "rating": null,
+    "rank_position": 4
+  },
+  {
+    "id": 111,
+    "name": "Hotel Roma 1",
+    "description": "Un bellissimo hotel a Roma, in Via Italia, 69",
+    "city": "Roma",
+    "phone": "341-6349001",
+    "services": [
+      "Posto auto"
+    ],
+    "rank": 0.0,
+    "rating": null,
+    "rank_position": 5
+  },
+  {
+    "id": 120,
+    "name": "Hotel Roma 10",
+    "description": "Un organizzato hotel a Roma, in Via Italia, 40",
+    "city": "Roma",
+    "phone": "365-2051697",
+    "services": [
+      "Sauna",
+      "Frigo in camera",
+      "Cancellazione gratuita",
+      "Piscina"
+    ],
+    "rank": 0.0,
+    "rating": null,
+    "rank_position": 6
+  },
+  {
+    "id": 113,
+    "name": "Hotel Roma 3",
+    "description": "Un grazioso hotel a Roma, in Via della fantasia, 1",
+    "city": "Roma",
+    "phone": "332-1286644",
+    "services": [],
+    "rank": 0.0,
+    "rating": null,
     "rank_position": 7
+  },
+  {
+    "id": 116,
+    "name": "Hotel Roma 6",
+    "description": "Un bellissimo hotel a Roma, in Via del tramonto, 4",
+    "city": "Roma",
+    "phone": "366-3384420",
+    "services": [
+      "Cancellazione gratuita",
+      "TV in camera",
+      "Wi-Fi"
+    ],
+    "rank": 0.0,
+    "rating": null,
+    "rank_position": 8
   },
   {
     "id": 118,
@@ -389,30 +316,7 @@
       "Frigo in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 8
-  },
-  {
-    "id": 117,
-    "name": "Hotel Roma 7",
-    "description": "Un organizzato hotel a Roma, in Via del tramonto, 63",
-    "city": "Roma",
-    "phone": "369-4805335",
-    "services": [],
-    "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
+    "rating": null,
     "rank_position": 9
   },
   {
@@ -423,13 +327,7 @@
     "phone": "396-3273550",
     "services": [],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
+    "rating": null,
     "rank_position": 10
   },
   {
@@ -445,15 +343,35 @@
       "Servizio in camera",
       "Cancellazione gratuita"
     ],
-    "rank": 0.0,
+    "rank": 1.69,
     "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
+      "Position": 1.57,
+      "Cleaning": 1.57,
+      "Service": 1.57,
+      "Price": 1.57,
+      "Global": 2.19
     },
     "rank_position": 1
+  },
+  {
+    "id": 192,
+    "name": "Hotel Cagliari 2",
+    "description": "Un bellissimo hotel a Cagliari, in Via Cavour, 74",
+    "city": "Cagliari",
+    "phone": "339-1421791",
+    "services": [
+      "Sauna",
+      "Posto auto"
+    ],
+    "rank": 1.25,
+    "rating": {
+      "Position": 1.25,
+      "Cleaning": 1.25,
+      "Service": 1.25,
+      "Price": 1.25,
+      "Global": 1.25
+    },
+    "rank_position": 2
   },
   {
     "id": 196,
@@ -475,7 +393,7 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 2
+    "rank_position": 3
   },
   {
     "id": 197,
@@ -502,7 +420,7 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 3
+    "rank_position": 4
   },
   {
     "id": 198,
@@ -522,7 +440,7 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 4
+    "rank_position": 5
   },
   {
     "id": 199,
@@ -535,26 +453,6 @@
       "Wi-Fi",
       "Cancellazione gratuita",
       "Frigo in camera"
-    ],
-    "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 5
-  },
-  {
-    "id": 192,
-    "name": "Hotel Cagliari 2",
-    "description": "Un bellissimo hotel a Cagliari, in Via Cavour, 74",
-    "city": "Cagliari",
-    "phone": "339-1421791",
-    "services": [
-      "Sauna",
-      "Posto auto"
     ],
     "rank": 0.0,
     "rating": {
@@ -672,15 +570,41 @@
       "Servizio in camera",
       "Frigo in camera"
     ],
-    "rank": 0.0,
+    "rank": 2.5,
+    "rating": {
+      "Position": 2.5,
+      "Cleaning": 2.5,
+      "Service": 2.5,
+      "Price": 2.5,
+      "Global": 2.5
+    },
+    "rank_position": 1
+  },
+  {
+    "id": 31,
+    "name": "Hotel Milano 1",
+    "description": "Un bellissimo hotel a Milano, in Via della libertà, 63",
+    "city": "Milano",
+    "phone": "382-3187543",
+    "services": [
+      "Frigo in camera",
+      "Palestra",
+      "Paga in struttura",
+      "Piscina",
+      "Posto auto",
+      "Cancellazione gratuita",
+      "Servizio in camera",
+      "TV in camera"
+    ],
+    "rank": 0.5,
     "rating": {
       "Position": 0.0,
       "Cleaning": 0.0,
       "Service": 0.0,
       "Price": 0.0,
-      "Global": 0.0
+      "Global": 2.5
     },
-    "rank_position": 1
+    "rank_position": 2
   },
   {
     "id": 35,
@@ -703,7 +627,7 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 2
+    "rank_position": 3
   },
   {
     "id": 32,
@@ -723,7 +647,7 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 3
+    "rank_position": 4
   },
   {
     "id": 33,
@@ -750,7 +674,7 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 4
+    "rank_position": 5
   },
   {
     "id": 38,
@@ -769,7 +693,7 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 5
+    "rank_position": 6
   },
   {
     "id": 39,
@@ -794,7 +718,7 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 6
+    "rank_position": 7
   },
   {
     "id": 36,
@@ -813,7 +737,7 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 7
+    "rank_position": 8
   },
   {
     "id": 40,
@@ -830,7 +754,7 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 8
+    "rank_position": 9
   },
   {
     "id": 37,
@@ -857,32 +781,6 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 9
-  },
-  {
-    "id": 31,
-    "name": "Hotel Milano 1",
-    "description": "Un bellissimo hotel a Milano, in Via della libertà, 63",
-    "city": "Milano",
-    "phone": "382-3187543",
-    "services": [
-      "Frigo in camera",
-      "Palestra",
-      "Paga in struttura",
-      "Piscina",
-      "Posto auto",
-      "Cancellazione gratuita",
-      "Servizio in camera",
-      "TV in camera"
-    ],
-    "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
     "rank_position": 10
   },
   {
@@ -897,14 +795,8 @@
       "Paga in struttura"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 1
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 135,
@@ -922,14 +814,8 @@
       "Servizio in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 2
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 134,
@@ -944,14 +830,8 @@
       "Servizio in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 3
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 140,
@@ -969,14 +849,8 @@
       "TV in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 4
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 133,
@@ -992,14 +866,8 @@
       "Frigo in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 5
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 132,
@@ -1015,14 +883,8 @@
       "TV in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 6
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 139,
@@ -1041,14 +903,8 @@
       "Sauna"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 7
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 138,
@@ -1068,14 +924,8 @@
       "Sauna"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 8
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 137,
@@ -1088,14 +938,8 @@
       "Posto auto"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 9
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 136,
@@ -1111,14 +955,8 @@
       "Piscina"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 10
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 41,
@@ -1136,14 +974,8 @@
       "Piscina"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 1
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 44,
@@ -1153,14 +985,8 @@
     "phone": "395-6577287",
     "services": [],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 2
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 50,
@@ -1179,14 +1005,8 @@
       "Cancellazione gratuita"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 3
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 45,
@@ -1203,14 +1023,8 @@
       "Sauna"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 4
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 42,
@@ -1222,14 +1036,8 @@
       "Cancellazione gratuita"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 5
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 43,
@@ -1249,14 +1057,8 @@
       "Cancellazione gratuita"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 6
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 48,
@@ -1274,14 +1076,8 @@
       "Cancellazione gratuita"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 7
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 49,
@@ -1301,14 +1097,8 @@
       "Cancellazione gratuita"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 8
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 46,
@@ -1318,14 +1108,8 @@
     "phone": "367-7841594",
     "services": [],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 9
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 47,
@@ -1345,14 +1129,29 @@
       "Cancellazione gratuita"
     ],
     "rank": 0.0,
+    "rating": null,
+    "rank_position": 0
+  },
+  {
+    "id": 188,
+    "name": "Hotel Palermo 8",
+    "description": "Un bellissimo hotel a Palermo, in Via Napoli, 35",
+    "city": "Palermo",
+    "phone": "324-4191627",
+    "services": [
+      "Piscina",
+      "Wi-Fi",
+      "Cancellazione gratuita"
+    ],
+    "rank": 1.0,
     "rating": {
-      "Position": 0.0,
+      "Position": 2.5,
       "Cleaning": 0.0,
       "Service": 0.0,
       "Price": 0.0,
-      "Global": 0.0
+      "Global": 2.5
     },
-    "rank_position": 10
+    "rank_position": 1
   },
   {
     "id": 189,
@@ -1371,34 +1170,7 @@
       "Servizio in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 1
-  },
-  {
-    "id": 188,
-    "name": "Hotel Palermo 8",
-    "description": "Un bellissimo hotel a Palermo, in Via Napoli, 35",
-    "city": "Palermo",
-    "phone": "324-4191627",
-    "services": [
-      "Piscina",
-      "Wi-Fi",
-      "Cancellazione gratuita"
-    ],
-    "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
+    "rating": null,
     "rank_position": 2
   },
   {
@@ -1413,13 +1185,7 @@
       "Paga in struttura"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
+    "rating": null,
     "rank_position": 3
   },
   {
@@ -1434,13 +1200,7 @@
       "Piscina"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
+    "rating": null,
     "rank_position": 4
   },
   {
@@ -1451,13 +1211,7 @@
     "phone": "368-4561552",
     "services": [],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
+    "rating": null,
     "rank_position": 5
   },
   {
@@ -1475,13 +1229,7 @@
       "Piscina"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
+    "rating": null,
     "rank_position": 6
   },
   {
@@ -1494,13 +1242,7 @@
       "Sauna"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
+    "rating": null,
     "rank_position": 7
   },
   {
@@ -1517,13 +1259,7 @@
       "Palestra"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
+    "rating": null,
     "rank_position": 8
   },
   {
@@ -1542,13 +1278,7 @@
       "Posto auto"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
+    "rating": null,
     "rank_position": 9
   },
   {
@@ -1568,13 +1298,7 @@
       "Cancellazione gratuita"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
+    "rating": null,
     "rank_position": 10
   },
   {
@@ -1594,14 +1318,8 @@
       "Piscina"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 1
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 26,
@@ -1619,14 +1337,8 @@
       "Posto auto"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 2
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 27,
@@ -1636,14 +1348,8 @@
     "phone": "375-7436203",
     "services": [],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 3
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 28,
@@ -1663,14 +1369,8 @@
       "Sauna"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 4
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 30,
@@ -1680,14 +1380,8 @@
     "phone": "343-6958486",
     "services": [],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 5
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 29,
@@ -1702,14 +1396,8 @@
       "Cancellazione gratuita"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 6
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 22,
@@ -1726,14 +1414,8 @@
       "Cancellazione gratuita"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 7
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 23,
@@ -1745,14 +1427,8 @@
       "Paga in struttura"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 8
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 24,
@@ -1772,14 +1448,8 @@
       "Servizio in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 9
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 25,
@@ -1792,14 +1462,8 @@
       "Wi-Fi"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 10
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 104,
@@ -1812,14 +1476,8 @@
       "Piscina"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 1
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 105,
@@ -1836,14 +1494,8 @@
       "Wi-Fi"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 2
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 106,
@@ -1857,14 +1509,8 @@
       "Frigo in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 3
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 107,
@@ -1878,14 +1524,8 @@
       "Palestra"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 4
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 101,
@@ -1902,14 +1542,8 @@
       "Frigo in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 5
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 102,
@@ -1929,14 +1563,8 @@
       "Wi-Fi"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 6
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 103,
@@ -1952,14 +1580,8 @@
       "Palestra"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 7
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 110,
@@ -1978,14 +1600,8 @@
       "Piscina"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 8
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 108,
@@ -1995,14 +1611,8 @@
     "phone": "359-3864949",
     "services": [],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 9
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 109,
@@ -2022,14 +1632,8 @@
       "Palestra"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 10
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 70,
@@ -2047,14 +1651,8 @@
       "Piscina"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 1
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 62,
@@ -2072,14 +1670,8 @@
       "Wi-Fi"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 2
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 61,
@@ -2089,14 +1681,8 @@
     "phone": "328-3594856",
     "services": [],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 3
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 64,
@@ -2111,14 +1697,8 @@
       "TV in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 4
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 63,
@@ -2130,14 +1710,8 @@
       "Paga in struttura"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 5
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 66,
@@ -2152,14 +1726,8 @@
       "Sauna"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 6
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 65,
@@ -2172,14 +1740,8 @@
       "Sauna"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 7
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 68,
@@ -2198,14 +1760,8 @@
       "TV in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 8
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 67,
@@ -2215,14 +1771,8 @@
     "phone": "387-8334625",
     "services": [],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 9
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 69,
@@ -2236,14 +1786,8 @@
       "Frigo in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 10
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 142,
@@ -2263,14 +1807,8 @@
       "Sauna"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 1
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 150,
@@ -2280,14 +1818,8 @@
     "phone": "333-3913769",
     "services": [],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 2
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 141,
@@ -2302,14 +1834,8 @@
       "Sauna"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 3
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 144,
@@ -2324,14 +1850,8 @@
       "Wi-Fi"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 4
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 143,
@@ -2349,14 +1869,8 @@
       "Posto auto"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 5
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 146,
@@ -2372,14 +1886,8 @@
       "Cancellazione gratuita"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 6
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 145,
@@ -2393,14 +1901,8 @@
       "Sauna"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 7
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 148,
@@ -2420,14 +1922,8 @@
       "Cancellazione gratuita"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 8
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 147,
@@ -2441,14 +1937,8 @@
       "Servizio in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 9
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 149,
@@ -2466,14 +1956,8 @@
       "Paga in struttura"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 10
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 19,
@@ -2483,14 +1967,8 @@
     "phone": "334-2052889",
     "services": [],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 1
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 16,
@@ -2505,14 +1983,8 @@
       "Cancellazione gratuita"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 2
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 15,
@@ -2530,14 +2002,8 @@
       "Wi-Fi"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 3
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 18,
@@ -2550,14 +2016,8 @@
       "Palestra"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 4
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 20,
@@ -2567,14 +2027,8 @@
     "phone": "382-4893459",
     "services": [],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 5
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 17,
@@ -2594,14 +2048,8 @@
       "Cancellazione gratuita"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 6
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 12,
@@ -2619,14 +2067,8 @@
       "TV in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 7
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 11,
@@ -2644,14 +2086,8 @@
       "Frigo in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 8
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 14,
@@ -2666,14 +2102,8 @@
       "Servizio in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 9
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 13,
@@ -2687,14 +2117,8 @@
       "Piscina"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 10
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 128,
@@ -2710,14 +2134,8 @@
       "Cancellazione gratuita"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 1
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 129,
@@ -2733,14 +2151,8 @@
       "Posto auto"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 2
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 130,
@@ -2753,14 +2165,8 @@
       "Posto auto"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 3
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 122,
@@ -2776,14 +2182,8 @@
       "TV in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 4
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 123,
@@ -2802,14 +2202,8 @@
       "Sauna"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 5
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 121,
@@ -2824,14 +2218,8 @@
       "Piscina"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 6
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 126,
@@ -2851,14 +2239,8 @@
       "Servizio in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 7
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 127,
@@ -2878,14 +2260,8 @@
       "TV in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 8
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 124,
@@ -2895,14 +2271,8 @@
     "phone": "312-5216383",
     "services": [],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 9
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 125,
@@ -2919,14 +2289,8 @@
       "Sauna"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 10
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 169,
@@ -2939,14 +2303,8 @@
       "Frigo in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 1
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 168,
@@ -2959,14 +2317,8 @@
       "Cancellazione gratuita"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 2
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 167,
@@ -2984,14 +2336,8 @@
       "Sauna"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 3
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 166,
@@ -3001,14 +2347,8 @@
     "phone": "354-9008946",
     "services": [],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 4
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 165,
@@ -3020,14 +2360,8 @@
       "Frigo in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 5
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 164,
@@ -3043,14 +2377,8 @@
       "TV in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 6
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 163,
@@ -3063,14 +2391,8 @@
       "Servizio in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 7
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 162,
@@ -3087,14 +2409,8 @@
       "Sauna"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 8
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 161,
@@ -3114,14 +2430,8 @@
       "Piscina"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 9
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 170,
@@ -3131,14 +2441,8 @@
     "phone": "380-3671849",
     "services": [],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 10
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 97,
@@ -3158,14 +2462,8 @@
       "Paga in struttura"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 1
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 98,
@@ -3180,14 +2478,8 @@
       "Sauna"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 2
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 95,
@@ -3207,14 +2499,8 @@
       "Sauna"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 3
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 96,
@@ -3231,14 +2517,8 @@
       "Sauna"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 4
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 99,
@@ -3250,14 +2530,8 @@
       "Cancellazione gratuita"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 5
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 100,
@@ -3275,14 +2549,8 @@
       "Palestra"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 6
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 93,
@@ -3302,14 +2570,8 @@
       "Cancellazione gratuita"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 7
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 94,
@@ -3319,14 +2581,8 @@
     "phone": "341-9302350",
     "services": [],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 8
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 91,
@@ -3344,14 +2600,8 @@
       "Piscina"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 9
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 92,
@@ -3365,14 +2615,8 @@
       "Sauna"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 10
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 157,
@@ -3384,14 +2628,8 @@
       "Wi-Fi"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 1
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 156,
@@ -3407,14 +2645,8 @@
       "Wi-Fi"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 2
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 159,
@@ -3433,14 +2665,8 @@
       "Piscina"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 3
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 158,
@@ -3460,14 +2686,8 @@
       "Servizio in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 4
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 151,
@@ -3479,14 +2699,8 @@
       "TV in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 5
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 160,
@@ -3502,14 +2716,8 @@
       "Cancellazione gratuita"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 6
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 153,
@@ -3528,14 +2736,8 @@
       "TV in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 7
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 152,
@@ -3552,14 +2754,8 @@
       "Paga in struttura"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 8
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 155,
@@ -3574,14 +2770,8 @@
       "Palestra"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 9
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 154,
@@ -3598,14 +2788,53 @@
       "Cancellazione gratuita"
     ],
     "rank": 0.0,
+    "rating": null,
+    "rank_position": 0
+  },
+  {
+    "id": 2,
+    "name": "Hotel Aosta 2",
+    "description": "Un ridente hotel a Aosta, in Via della libertà, 96",
+    "city": "Aosta",
+    "phone": "385-8015757",
+    "services": [
+      "Cancellazione gratuita",
+      "Wi-Fi",
+      "Piscina",
+      "Paga in struttura",
+      "Frigo in camera",
+      "TV in camera"
+    ],
+    "rank": 2.5,
+    "rating": {
+      "Position": 2.5,
+      "Cleaning": 2.5,
+      "Service": 2.5,
+      "Price": 2.5,
+      "Global": 2.5
+    },
+    "rank_position": 1
+  },
+  {
+    "id": 1,
+    "name": "Hotel Aosta 1",
+    "description": "Un ridente hotel a Aosta, in Via della gioia, 25",
+    "city": "Aosta",
+    "phone": "347-4453634",
+    "services": [
+      "TV in camera",
+      "Palestra",
+      "Cancellazione gratuita"
+    ],
+    "rank": 0.5,
     "rating": {
       "Position": 0.0,
       "Cleaning": 0.0,
       "Service": 0.0,
       "Price": 0.0,
-      "Global": 0.0
+      "Global": 2.5
     },
-    "rank_position": 10
+    "rank_position": 2
   },
   {
     "id": 3,
@@ -3622,31 +2851,7 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 1
-  },
-  {
-    "id": 2,
-    "name": "Hotel Aosta 2",
-    "description": "Un ridente hotel a Aosta, in Via della libertà, 96",
-    "city": "Aosta",
-    "phone": "385-8015757",
-    "services": [
-      "Cancellazione gratuita",
-      "Wi-Fi",
-      "Piscina",
-      "Paga in struttura",
-      "Frigo in camera",
-      "TV in camera"
-    ],
-    "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 2
+    "rank_position": 3
   },
   {
     "id": 5,
@@ -3672,7 +2877,7 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 3
+    "rank_position": 4
   },
   {
     "id": 4,
@@ -3689,7 +2894,7 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 4
+    "rank_position": 5
   },
   {
     "id": 7,
@@ -3711,7 +2916,7 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 5
+    "rank_position": 6
   },
   {
     "id": 6,
@@ -3728,7 +2933,7 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 6
+    "rank_position": 7
   },
   {
     "id": 9,
@@ -3745,7 +2950,7 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 7
+    "rank_position": 8
   },
   {
     "id": 8,
@@ -3768,7 +2973,7 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 8
+    "rank_position": 9
   },
   {
     "id": 10,
@@ -3789,27 +2994,6 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 9
-  },
-  {
-    "id": 1,
-    "name": "Hotel Aosta 1",
-    "description": "Un ridente hotel a Aosta, in Via della gioia, 25",
-    "city": "Aosta",
-    "phone": "347-4453634",
-    "services": [
-      "TV in camera",
-      "Palestra",
-      "Cancellazione gratuita"
-    ],
-    "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
     "rank_position": 10
   },
   {
@@ -3820,14 +3004,8 @@
     "phone": "337-1365356",
     "services": [],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 1
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 53,
@@ -3843,14 +3021,8 @@
       "Palestra"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 2
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 51,
@@ -3865,14 +3037,8 @@
       "TV in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 3
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 56,
@@ -3889,14 +3055,8 @@
       "Paga in struttura"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 4
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 57,
@@ -3914,14 +3074,8 @@
       "Wi-Fi"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 5
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 54,
@@ -3940,14 +3094,8 @@
       "Servizio in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 6
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 55,
@@ -3963,14 +3111,8 @@
       "Servizio in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 7
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 60,
@@ -3988,14 +3130,8 @@
       "Cancellazione gratuita"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 8
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 58,
@@ -4007,14 +3143,8 @@
       "Palestra"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 9
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 59,
@@ -4029,14 +3159,8 @@
       "Wi-Fi"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 10
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 178,
@@ -4052,14 +3176,8 @@
       "Paga in struttura"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 1
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 177,
@@ -4069,14 +3187,8 @@
     "phone": "368-1712796",
     "services": [],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 2
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 180,
@@ -4093,14 +3205,8 @@
       "Posto auto"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 3
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 176,
@@ -4117,14 +3223,8 @@
       "Posto auto"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 4
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 175,
@@ -4136,14 +3236,8 @@
       "Sauna"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 5
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 179,
@@ -4156,14 +3250,8 @@
       "Posto auto"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 6
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 174,
@@ -4180,14 +3268,8 @@
       "Servizio in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 7
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 173,
@@ -4200,14 +3282,8 @@
       "Sauna"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 8
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 172,
@@ -4226,14 +3302,8 @@
       "Frigo in camera"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 9
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 171,
@@ -4251,14 +3321,8 @@
       "Wi-Fi"
     ],
     "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 10
+    "rating": null,
+    "rank_position": 0
   },
   {
     "id": 81,
@@ -4271,15 +3335,75 @@
       "Piscina",
       "TV in camera"
     ],
-    "rank": 4.99,
+    "rank": 3.24,
     "rating": {
-      "Position": 4.99,
-      "Cleaning": 4.99,
-      "Service": 4.99,
-      "Price": 4.99,
-      "Global": 4.99
+      "Position": 3.25,
+      "Cleaning": 3.0,
+      "Service": 3.75,
+      "Price": 2.75,
+      "Global": 3.44
     },
     "rank_position": 1
+  },
+  {
+    "id": 83,
+    "name": "Hotel Firenze 3",
+    "description": "Un bellissimo hotel a Firenze, in Via Roma, 45",
+    "city": "Firenze",
+    "phone": "313-7184050",
+    "services": [
+      "Servizio in camera",
+      "Frigo in camera",
+      "TV in camera",
+      "Cancellazione gratuita"
+    ],
+    "rank": 2.5,
+    "rating": {
+      "Position": 2.5,
+      "Cleaning": 2.5,
+      "Service": 2.5,
+      "Price": 2.5,
+      "Global": 2.5
+    },
+    "rank_position": 2
+  },
+  {
+    "id": 86,
+    "name": "Hotel Firenze 6",
+    "description": "Un grazioso hotel a Firenze, in Via della fantasia, 21",
+    "city": "Firenze",
+    "phone": "331-5464654",
+    "services": [
+      "Frigo in camera",
+      "Piscina",
+      "Wi-Fi"
+    ],
+    "rank": 2.5,
+    "rating": {
+      "Position": 2.5,
+      "Cleaning": 2.5,
+      "Service": 2.5,
+      "Price": 2.5,
+      "Global": 2.5
+    },
+    "rank_position": 3
+  },
+  {
+    "id": 82,
+    "name": "Hotel Firenze 2",
+    "description": "Un bellissimo hotel a Firenze, in Via della gioia, 68",
+    "city": "Firenze",
+    "phone": "339-6787075",
+    "services": [],
+    "rank": 1.25,
+    "rating": {
+      "Position": 1.25,
+      "Cleaning": 1.25,
+      "Service": 1.25,
+      "Price": 1.25,
+      "Global": 1.25
+    },
+    "rank_position": 4
   },
   {
     "id": 89,
@@ -4304,7 +3428,7 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 2
+    "rank_position": 5
   },
   {
     "id": 90,
@@ -4328,7 +3452,7 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 3
+    "rank_position": 6
   },
   {
     "id": 88,
@@ -4353,7 +3477,7 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 4
+    "rank_position": 7
   },
   {
     "id": 87,
@@ -4373,28 +3497,7 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 5
-  },
-  {
-    "id": 86,
-    "name": "Hotel Firenze 6",
-    "description": "Un grazioso hotel a Firenze, in Via della fantasia, 21",
-    "city": "Firenze",
-    "phone": "331-5464654",
-    "services": [
-      "Frigo in camera",
-      "Piscina",
-      "Wi-Fi"
-    ],
-    "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 6
+    "rank_position": 8
   },
   {
     "id": 85,
@@ -4413,7 +3516,7 @@
       "Price": 0.0,
       "Global": 0.0
     },
-    "rank_position": 7
+    "rank_position": 9
   },
   {
     "id": 84,
@@ -4421,45 +3524,6 @@
     "description": "Un ridente hotel a Firenze, in Via Leonardo da Vinci, 19",
     "city": "Firenze",
     "phone": "330-7174828",
-    "services": [],
-    "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 8
-  },
-  {
-    "id": 83,
-    "name": "Hotel Firenze 3",
-    "description": "Un bellissimo hotel a Firenze, in Via Roma, 45",
-    "city": "Firenze",
-    "phone": "313-7184050",
-    "services": [
-      "Servizio in camera",
-      "Frigo in camera",
-      "TV in camera",
-      "Cancellazione gratuita"
-    ],
-    "rank": 0.0,
-    "rating": {
-      "Position": 0.0,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 0.0
-    },
-    "rank_position": 9
-  },
-  {
-    "id": 82,
-    "name": "Hotel Firenze 2",
-    "description": "Un bellissimo hotel a Firenze, in Via della gioia, 68",
-    "city": "Firenze",
-    "phone": "339-6787075",
     "services": [],
     "rank": 0.0,
     "rating": {

@@ -88,7 +88,7 @@ public class User {
     /**
      * Restituisce l'impronta digitale dell'utente.
      *
-     * @return L'impronta digitale.
+     * @return password
      */
     public String getFingerprint() {
         return fingerprint;
@@ -121,6 +121,11 @@ public class User {
         this.rank = Badge.getRankForExperience(experience);
     }
 
+    /*
+     * Aggiunge esperienza all'utente.
+     * 
+     * Metodo sincronizzato per per sicurezza
+     */
     synchronized public void addExperience(int experience) throws IllegalArgumentException{
         int newExperience = this.experience + experience;
         if(newExperience <0) setExperience(0);
@@ -137,10 +142,8 @@ public class User {
         return rank;
     }
 
+    //Controlla se la password dell'utente è corretta
     public boolean passwordTest(String compare){
-        System.out.println("Fingerprint: " + fingerprint+ " Compare: " + compare);
-        //stampa la lunghezza delle due stringhe
-        System.out.println("Fingerprint length: " + fingerprint.length() + " Compare length: " + compare.length());
         return fingerprint.equals(compare);
     }
 }

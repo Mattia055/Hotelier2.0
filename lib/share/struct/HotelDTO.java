@@ -2,7 +2,10 @@ package lib.share.struct;
 
 import java.util.Arrays;
 
-/*Data Transfer Object */
+/*Data Transfer Object
+ * 
+ * Analogo all'Hotel ma senza campi che non devono essere trasferiti
+ */
 
 public class HotelDTO{
 
@@ -15,7 +18,7 @@ public class HotelDTO{
     public double      rank;
     public Score       rating;
     public int         rank_position = -1;
-    
+
 
     public HotelDTO (String name, String description, String city, String phone, String[] services, double rank,Score rating,int rank_position) {
         //this.id         = id;
@@ -74,11 +77,11 @@ public class HotelDTO{
         if(rank_position != -1){
             str.append("Rank Position: " + rank_position + "\n");
         if(rank != -1){
-            str.append("Rank: " + rank + "\n");
+            str.append("\nRank: " + rank + "\n");
         }
         }
         if (rating != null) {
-            str.append("Rating\n" + rating.toString());
+            str.append("\nRating\n" + rating.toString());
         } else {
             str.append("\nRating: N/A\n");
         }

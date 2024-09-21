@@ -1,8 +1,9 @@
 package lib.share.struct;
 
 public class Score implements Cloneable{
-    protected static final double MAX_GRADE = 5;
-    protected static final double MIN_GRADE = 0; 
+    //punteggi massimi e minimi
+    public static final double max = 5;
+    public static final double min = 0; 
 
     private double Position;
     private double Cleaning;
@@ -19,37 +20,43 @@ public class Score implements Cloneable{
         
     }
 
+    //restituisce un placeHolder per i punteggi
     public static Score Placeholder(){
-        return new Score(MIN_GRADE,MIN_GRADE,MIN_GRADE,MIN_GRADE,MIN_GRADE);
+        return new Score(min,min,min,min,min);
     }
 
     /*
-    * controllo univoco per ogni campo
-    */
+     * Verifica se i punteggi sono validi
+     */
 
     public boolean isValidPosition(){
-        return Position >= MIN_GRADE && Position <= MAX_GRADE;
+        return Position >= min && Position <= max;
     }
 
     public boolean isValidCleaning(){
-        return Cleaning >= MIN_GRADE && Cleaning <= MAX_GRADE;
+        return Cleaning >= min && Cleaning <= max;
     }
 
     public boolean isValidService(){
-        return Service >= MIN_GRADE && Service <= MAX_GRADE;
+        return Service >= min && Service <= max;
     }
 
     public boolean isValidPrice(){
-        return Price >= MIN_GRADE && Price <= MAX_GRADE;
+        return Price >= min && Price <= max;
     }
 
     public boolean isValidGlobal(){
-        return Global >= MIN_GRADE && Global <= MAX_GRADE;
+        return Global >= min && Global <= max;
     }
 
+    /*
+     * Verifica se i punteggi sono validi
+     * 
+     * Metodo non utilizzato
+     */
     public static boolean isValid(double... Scores){
         for(double Score : Scores){
-            if(Score > MAX_GRADE || Score < MIN_GRADE)
+            if(Score > max || Score < min)
                 return false;
         }
         return true;
@@ -79,6 +86,9 @@ public class Score implements Cloneable{
         return Service;
     }
 
+    /*
+     * Setter con arrotondamento alla seconda cifra decimale
+     */
     public void setService(double Service){
         this.Service = Math.round(Service * 100.0) / 100.0;
     }
@@ -100,11 +110,11 @@ public class Score implements Cloneable{
     }
 
     public static double getMin(){
-        return (double) MIN_GRADE;
+        return (double) min;
     }
 
     public static double getMax(){
-        return  MAX_GRADE;
+        return  max;
     }
 
     @Override
@@ -124,9 +134,12 @@ public class Score implements Cloneable{
     }
 
     @Override
+    /*
+     * Metodo di clonazione
+     */
     public Score clone() {
         try {
-            return (Score) super.clone(); //Dato che tutti i dati sono primitivi una shallow copy è sufficiente
+            return (Score) super.clone(); //Dato che tutti i dati sono primitivi esegue una shallow copy
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }

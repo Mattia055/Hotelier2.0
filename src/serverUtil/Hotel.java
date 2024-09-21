@@ -7,27 +7,26 @@ import java.util.Arrays;
 
 public class Hotel{
 
-    private int         id; 
-    private String      name;
-    private String      description;
-    private String      city;
-    private String      phone;
-    private String[]    services;
-    //this gets modified when ranking manager updates the score
+    protected   int         id; 
+    protected   String      name;
+    private     String      description;
+    protected   String      city;
+    private     String      phone;
+    private     String[]    services;
     protected double      rank;
     protected Score       rating;
     protected int         rank_position;
 
     public Hotel (int id, String name, String description, String city, String phone, String[] services, double rank,Score rating,int rank_position) {
-        this.id         = id;
-        this.name       = name;
-        this.description= description;
-        this.city       = city;
-        this.phone      = phone;
-        this.services   = services;
-        this.rank       = rank;
-        this.rating     = rating;
-        this.rank_position = rank_position;
+        this.id             = id;
+        this.name           = name;
+        this.description    = description;
+        this.city           = city;
+        this.phone          = phone;
+        this.services       = services;
+        this.rank           = rank;
+        this.rating         = rating;
+        this.rank_position  = rank_position;
     }
 
     public int getID(){
@@ -66,9 +65,11 @@ public class Hotel{
         return rating;
     }
 
+    //aggiorna anche il rank
     public void setRating(Score newRating){
         rating = newRating;
-        rank = rating.getMean();
+        //arrotonda alla prima cifra decimale
+        rank = Math.round(rating.getMean() * 100.0) / 100.0;
     }
 
     @Override
@@ -97,7 +98,10 @@ public class Hotel{
 
     public HotelDTO toDTO(){
         try{
-        return new HotelDTO(name, description, city, phone, services.clone(), rank,rating.clone(),rank_position);
+        return new HotelDTO(name, description, city, phone, 
+                            services != null? services.clone():services, 
+                            rank,rating != null? rating.clone():Score.Placeholder(),
+                            rank_position);
         }catch(Exception e){
             e.printStackTrace();
             return null;
