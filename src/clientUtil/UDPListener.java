@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.SocketTimeoutException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -15,9 +16,9 @@ public class UDPListener extends Thread {
     private LinkedBlockingQueue<String> udpMessages;
     private String UDPaddress;
     private int UDPport;
-    private MulticastSocket multicastSocket;
     private InetAddress group;
     private AtomicBoolean running;      // Flag di esecuzione
+    private MulticastSocket multicastSocket;
     private String errorLogPath;
     private PrintWriter logWriter;
     private boolean hasErrors = false;
@@ -25,95 +26,75 @@ public class UDPListener extends Thread {
     public UDPListener(String address, int port, LinkedBlockingQueue<String> queue, String logPath) 
     throws IOException
     {
-        
         this.udpMessages = queue;
         this.UDPaddress = address;                  
         this.UDPport = port;                        
         this.running = new AtomicBoolean(true);     // Inizializza la flag di running
-        this.errorLogPath = logPath;                // Inizializza il percorso del file di log
-        logWriter = null;
-        createLogFile();                            // Crea il file di log se non esiste
-        logWriter.println("UDPListener built");
+        this.errorLogPath = logPath;  
+        this.multicastSocket = null;              
     }
 
     @Override
     public void run() {
-        try {
-            logWriter.print("Running");
+        try{
+            this.multicastSocket = new MulticastSocket(UDPport);
             group = InetAddress.getByName(UDPaddress);
-            multicastSocket = new MulticastSocket(UDPport);
             multicastSocket.joinGroup(group);
+            multicastSocket.setSoTimeout(5000); // Timeout di 5 secondi
             byte[] buffer = new byte[2048];
 
-            // Attende messaggi
+            // event loop
             while (running.get()) {
                 DatagramPacket dp = new DatagramPacket(buffer, buffer.length);
                 try {
                     // Riceve pacchetti UDP [Bloccante]
-                    multicastSocket.receive(dp);
-                    logWriter.println("Unblocked");
+                    multicastSocket.receive(dp);    //si risveglia dopo 5 secondi
                     String s = new String(dp.getData(), 0, dp.getLength(), "UTF-8");
                     // Inserisce il messaggio nella coda condivisa
                     udpMessages.put(s);
-                    logWriter.println("Received: " + s);
-                } catch (IOException e) {
+                } catch (SocketTimeoutException e){
+                    //  ThreadShuttingDown
+                } catch (Exception e) {
                     logError(e);
-                }
-            }
-        } catch (Exception e) {
-            logError(e);
-        } finally {
-            // Cleanup
-            if (multicastSocket != null && !multicastSocket.isClosed()) {
-                try {
-                    multicastSocket.leaveGroup(group);
-                } catch (IOException e) {
-                    logError(e);
-                }
-                multicastSocket.close();
-            }
-            // Chiude il file di log e fa cleanup
-            if (logWriter != null) {
-                logWriter.close();
-                //FIXME: Questo codice non è mai eseguito
-                boolean ciao = false;
-                if (ciao) {
-                    try {
-                        // elimina il file se hasErrors è false
-                        Files.delete(Paths.get(errorLogPath));
-                    } catch (IOException e) {
-                        // Il file non viene cancellato
-                    }
                 }
             }
 
+            multicastSocket.leaveGroup(group);
+            multicastSocket.close();
+
+        }
+         catch (Exception e) {
+            logError(e);
+
+        } finally {
+            try{
+                deleteLogFile();
+            } catch(IOException e){
+            }
             running.set(true); // Reset the running flag
         }
     }
 
     public void stopUDPlistening() {
         running.set(false); // Setta la flag per l'uscita dal loop
-        // Chiude la socket di multicast
-        if (multicastSocket != null) {
-            multicastSocket.close();
-        }
     }
 
     public void startUDPlistening() {
         try{
-            logWriter.println("Starting...");
             this.start();
         }catch(IllegalThreadStateException e){
             //Il thread è già in esecuzione
-            logWriter.println("UDP Exception");
+            logError(e);
             
         }
     }
 
     public void Join() {
+        running.set(false);
         try {
             this.join();
         } catch (InterruptedException e) {
+        
         }
     }
 
@@ -121,18 +102,25 @@ public class UDPListener extends Thread {
         return logWriter != null;
     }
 
-    private void createLogFile() throws IOException{
-            // Crea il file se non esiste
-            logWriter = new PrintWriter(new FileWriter(errorLogPath, true),true); // Modalità append
-            logWriter.println("Log file created");
-            //logWriter.flush();
-        
+    private void logError(Throwable e) {
+        if(logWriter == null){
+            try{
+                logWriter = new PrintWriter(new FileWriter(errorLogPath, true),true); // Modalità append e autoflush
+            } catch(IOException ex){}
+        }   
+        if(e != null)
+            e.printStackTrace(logWriter); 
+        hasErrors = true;
+        return;
+    
     }
 
-    private void logError(Throwable e) {
-        if(logWriter != null){
-            hasErrors = true;
-            e.printStackTrace(logWriter); 
+    private void deleteLogFile() throws IOException{
+        if(logWriter == null)
+            return;
+        else if(hasErrors == false){
+            logWriter.close();
+            Files.delete(Paths.get(errorLogPath));
         }
     }
 

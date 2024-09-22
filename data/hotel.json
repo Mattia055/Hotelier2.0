@@ -166,23 +166,6 @@
     "rank_position": 0
   },
   {
-    "id": 117,
-    "name": "Hotel Roma 7",
-    "description": "Un organizzato hotel a Roma, in Via del tramonto, 63",
-    "city": "Roma",
-    "phone": "369-4805335",
-    "services": [],
-    "rank": 3.38,
-    "rating": {
-      "Position": 3.38,
-      "Cleaning": 3.38,
-      "Service": 3.38,
-      "Price": 3.38,
-      "Global": 3.38
-    },
-    "rank_position": 1
-  },
-  {
     "id": 114,
     "name": "Hotel Roma 4",
     "description": "Un bellissimo hotel a Roma, in Via della libertà, 86",
@@ -196,13 +179,30 @@
       "TV in camera",
       "Paga in struttura"
     ],
-    "rank": 1.88,
+    "rank": 3.44,
     "rating": {
-      "Position": 1.88,
-      "Cleaning": 1.88,
-      "Service": 1.88,
-      "Price": 1.88,
-      "Global": 1.88
+      "Position": 3.44,
+      "Cleaning": 3.44,
+      "Service": 3.44,
+      "Price": 3.44,
+      "Global": 3.44
+    },
+    "rank_position": 1
+  },
+  {
+    "id": 117,
+    "name": "Hotel Roma 7",
+    "description": "Un organizzato hotel a Roma, in Via del tramonto, 63",
+    "city": "Roma",
+    "phone": "369-4805335",
+    "services": [],
+    "rank": 3.38,
+    "rating": {
+      "Position": 3.38,
+      "Cleaning": 3.38,
+      "Service": 3.38,
+      "Price": 3.38,
+      "Global": 3.38
     },
     "rank_position": 2
   },
@@ -1133,27 +1133,6 @@
     "rank_position": 0
   },
   {
-    "id": 188,
-    "name": "Hotel Palermo 8",
-    "description": "Un bellissimo hotel a Palermo, in Via Napoli, 35",
-    "city": "Palermo",
-    "phone": "324-4191627",
-    "services": [
-      "Piscina",
-      "Wi-Fi",
-      "Cancellazione gratuita"
-    ],
-    "rank": 1.0,
-    "rating": {
-      "Position": 2.5,
-      "Cleaning": 0.0,
-      "Service": 0.0,
-      "Price": 0.0,
-      "Global": 2.5
-    },
-    "rank_position": 1
-  },
-  {
     "id": 189,
     "name": "Hotel Palermo 9",
     "description": "Un organizzato hotel a Palermo, in Via della fantasia, 13",
@@ -1169,8 +1148,35 @@
       "Paga in struttura",
       "Servizio in camera"
     ],
-    "rank": 0.0,
-    "rating": null,
+    "rank": 2.5,
+    "rating": {
+      "Position": 2.5,
+      "Cleaning": 2.5,
+      "Service": 2.5,
+      "Price": 2.5,
+      "Global": 2.5
+    },
+    "rank_position": 1
+  },
+  {
+    "id": 188,
+    "name": "Hotel Palermo 8",
+    "description": "Un bellissimo hotel a Palermo, in Via Napoli, 35",
+    "city": "Palermo",
+    "phone": "324-4191627",
+    "services": [
+      "Piscina",
+      "Wi-Fi",
+      "Cancellazione gratuita"
+    ],
+    "rank": 1.5,
+    "rating": {
+      "Position": 1.88,
+      "Cleaning": 1.25,
+      "Service": 1.25,
+      "Price": 1.25,
+      "Global": 1.88
+    },
     "rank_position": 2
   },
   {

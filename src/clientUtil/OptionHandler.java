@@ -263,7 +263,8 @@ public class OptionHandler {
                 }
                 if(response.getStatus() == Status.OK){
                     flipOptionSet();
-                    ClientMain.UDPSubscriber.startUDPlistening();
+                    ClientMain.createUDPListener();
+                    ClientMain.getUDPListener().startUDPlistening();
                 }
                 setMessageOnReturn(response.getStatus() == Status.OK
                     ? Ansi.GREEN + "Login successful!" + Ansi.RESET
@@ -699,7 +700,7 @@ public static class SearchHotel extends BaseMenu {
     
         private void displaySearchMenu() {
             menuBuffer.append(Ansi.CLEAR)
-                      .append("Hotel Search Menu\n\n");
+                      .append("Review Select Menu\n\n");
             appendMenuEntry(menuBuffer, "Hotel", hotelName.toString(), index == 0);
             appendMenuEntry(menuBuffer, "City",city.toString(), index == 1);
             appendMenuEntry(menuBuffer, "SELECT", "", index == 2, true);

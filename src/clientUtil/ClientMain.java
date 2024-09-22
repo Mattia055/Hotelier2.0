@@ -17,7 +17,12 @@ import lib.share.etc.ConfigLoader;
 public class ClientMain {
     private static final String CONFIG_DEFAULT = "config/client.properties";
     private static  LinkedBlockingQueue<String> UDPQueue;
-    public static   UDPListener UDPSubscriber;
+    private static   UDPListener UDPSubscriber;
+
+    private static String MultiAddress = null;
+    private static int MultiPort = -1;
+    private static String logPath = null;
+
     private static  HotelierAPI EntryPoint;
     
     public static void main(String[] args){
@@ -71,6 +76,7 @@ public class ClientMain {
 
         String          logFile = config.getStringAttribute("udp_log_path",null);
         if(logFile == null) throw new MalformedParametersException("Il parametro 'logFile' è mancante.");
+        
 
         String          Host = config.getStringAttribute("host",null);
         validateHost(Host,"host");
@@ -81,8 +87,12 @@ public class ClientMain {
         validatePort(UDPPort,"udp_port");
         validatePort(Port,"port");
 
+        //assegnazione variabili statiche
+        MultiAddress = UDPAddr;
+        MultiPort = UDPPort;
+        logPath = logFile;
+
         UDPQueue = new LinkedBlockingQueue<>();
-        UDPSubscriber = new UDPListener(UDPAddr,UDPPort,UDPQueue,logFile);
 
         EntryPoint = new HotelierAPI(Host,Port);
         EntryPoint.connect();
@@ -97,9 +107,23 @@ public class ClientMain {
             }catch(APIException e){
                 System.out.println("Error when disconnecting from server");
             }
+            if(UDPSubscriber == null) return;
             UDPSubscriber.stopUDPlistening();
             UDPSubscriber.Join();
         }
     }
+
+    public static void createUDPListener(){
+        try{
+            UDPSubscriber = new UDPListener(MultiAddress,MultiPort,UDPQueue,logPath);
+        } catch(IOException e){
+            System.exit(-1);
+        }
+    }
+
+    public static UDPListener getUDPListener(){
+        return UDPSubscriber;
+    }
+    
     
 }

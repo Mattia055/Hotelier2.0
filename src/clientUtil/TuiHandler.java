@@ -152,7 +152,7 @@ public class TuiHandler implements Runnable {
             if (response.getStatus() == Status.OK) {
                 LastOpMessage = Ansi.GREEN + "Logged out successfully" + Ansi.RESET;
                 OptionSet = Option.base();
-                ClientMain.UDPSubscriber.stopUDPlistening();
+                ClientMain.getUDPListener().stopUDPlistening();
                 index = 0;
             } else {
                 HandleUnauthorized();
