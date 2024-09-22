@@ -22,6 +22,8 @@ public class ClientMain {
     private static String MultiAddress = null;
     private static int MultiPort = -1;
     private static String logPath = null;
+    private static boolean closeOnTimeout = false;
+    private static long Timeout         = -1;
 
     private static  HotelierAPI EntryPoint;
     
@@ -76,9 +78,8 @@ public class ClientMain {
 
         String          logFile = config.getStringAttribute("udp_log_path",null);
         if(logFile == null) throw new MalformedParametersException("Il parametro 'logFile' è mancante.");
-        
-
         String          Host = config.getStringAttribute("host",null);
+
         validateHost(Host,"host");
 
         int             UDPPort = config.getIntAttribute("udp_port",-1);
@@ -86,6 +87,12 @@ public class ClientMain {
 
         validatePort(UDPPort,"udp_port");
         validatePort(Port,"port");
+
+        closeOnTimeout = config.getBooleanAttribute("closeOnTimeout", closeOnTimeout);
+        Timeout = config.getLongAttribute("timeout", Timeout);
+        if(Timeout <= 0)closeOnTimeout = false;
+
+
 
         //assegnazione variabili statiche
         MultiAddress = UDPAddr;
@@ -108,14 +115,20 @@ public class ClientMain {
                 System.out.println("Error when disconnecting from server");
             }
             if(UDPSubscriber == null) return;
-            UDPSubscriber.stopUDPlistening();
+            UDPSubscriber.stopUDPlistening(true);
             UDPSubscriber.Join();
         }
     }
 
     public static void createUDPListener(){
         try{
-            UDPSubscriber = new UDPListener(MultiAddress,MultiPort,UDPQueue,logPath);
+            UDPSubscriber = new UDPListener(MultiAddress,
+                                            MultiPort,
+                                            UDPQueue,
+                                            logPath,
+                                            closeOnTimeout,
+                                            Timeout
+                                            );
         } catch(IOException e){
             System.exit(-1);
         }

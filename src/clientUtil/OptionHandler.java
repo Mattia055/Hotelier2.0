@@ -618,13 +618,16 @@ public static class SearchHotel extends BaseMenu {
         private final StringBuilder hotelName = new StringBuilder();
         private final StringBuilder city = new StringBuilder();
 
+        private boolean sharedReturn = false;
+
         private int[] scores = new int[5];
         private String[] scoreLabels = {"Global","Cleaning","Position","Price","Service"};
+
 
     
         @Override
         public void run() {
-            while (!returnToMenu) {
+            while (!sharedReturn) {
                 displaySearchMenu();
                 String key = reader.readBinding(keyMap);
                 if (key == null) continue;
@@ -639,7 +642,7 @@ public static class SearchHotel extends BaseMenu {
                             city.setLength(0);
                             hotelName.setLength(0);
                         }
-                        else if (index == 3) returnToMenu = true;
+                        else if (index == 3) sharedReturn = true;
                         break;
                     case "SPACE": handleInput(" "); break;
                     case "BACKSPACE": handleBackspace(); break;
@@ -754,10 +757,17 @@ public static class SearchHotel extends BaseMenu {
                             } catch (Exception e) {
                                 Terminate(Ansi.RED + "Review failed: " + getStackTraceAsString(e) + Ansi.RESET);
                             }
+                            
+                            
                             if(response.getStatus() == Status.OK){
                                 message = Ansi.GREEN + "Review Inserted!" + Ansi.RESET;
-                            } else {
-                                message = Ansi.RED + "Review failed: " + response.getMessage() + Ansi.RESET;
+                            } else{
+                                if(response.getStatus() == Status.MUST_LOGIN){
+                                    TuiHandler.HandleUnauthorized();
+                                    sharedReturn = true;
+                                    return;
+                                }    
+                                else message = Ansi.RED + "Review failed: " + response.getMessage() + Ansi.RESET;
                             }
                             return;
                         } break;

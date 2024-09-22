@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -22,8 +23,11 @@ public class UDPListener extends Thread {
     private String errorLogPath;
     private PrintWriter logWriter;
     private boolean hasErrors = false;
+    private int timeout = 0;
+    private boolean closeOnTimeout = false;
 
-    public UDPListener(String address, int port, LinkedBlockingQueue<String> queue, String logPath) 
+
+    public UDPListener(String address, int port, LinkedBlockingQueue<String> queue, String logPath,boolean closeOnTimeout,long timeout) 
     throws IOException
     {
         this.udpMessages = queue;
@@ -31,7 +35,9 @@ public class UDPListener extends Thread {
         this.UDPport = port;                        
         this.running = new AtomicBoolean(true);     // Inizializza la flag di running
         this.errorLogPath = logPath;  
-        this.multicastSocket = null;              
+        this.multicastSocket = null;  
+        this.timeout = (int)timeout;
+        this.closeOnTimeout = closeOnTimeout;            
     }
 
     @Override
@@ -40,7 +46,9 @@ public class UDPListener extends Thread {
             this.multicastSocket = new MulticastSocket(UDPport);
             group = InetAddress.getByName(UDPaddress);
             multicastSocket.joinGroup(group);
-            multicastSocket.setSoTimeout(5000); // Timeout di 5 secondi
+            if(!closeOnTimeout){
+                multicastSocket.setSoTimeout(timeout); 
+            }
             byte[] buffer = new byte[2048];
 
             // event loop
@@ -52,15 +60,17 @@ public class UDPListener extends Thread {
                     String s = new String(dp.getData(), 0, dp.getLength(), "UTF-8");
                     // Inserisce il messaggio nella coda condivisa
                     udpMessages.put(s);
-                } catch (SocketTimeoutException e){
+                } catch (SocketTimeoutException | SocketException e){
                     //  ThreadShuttingDown
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     logError(e);
                 }
             }
-
-            multicastSocket.leaveGroup(group);
-            multicastSocket.close();
+            if(!multicastSocket.isClosed() && closeOnTimeout){
+                multicastSocket.leaveGroup(group);
+                multicastSocket.close();
+            }
 
         }
          catch (Exception e) {
@@ -71,12 +81,22 @@ public class UDPListener extends Thread {
                 deleteLogFile();
             } catch(IOException e){
             }
-            running.set(true); // Reset the running flag
         }
     }
 
-    public void stopUDPlistening() {
+    public void stopUDPlistening(boolean force) {
         running.set(false); // Setta la flag per l'uscita dal loop
+        try{
+            if(force || !closeOnTimeout){
+                multicastSocket.close();
+            }
+        }catch(NullPointerException | ClassCastException e){
+
+        }
+    }
+    //polymorphic method
+    public void stopUDPlistening() {
+        stopUDPlistening(false);
     }
 
     public void startUDPlistening() {

@@ -240,7 +240,13 @@
       "Posto auto"
     ],
     "rank": 0.0,
-    "rating": null,
+    "rating": {
+      "Position": 0.0,
+      "Cleaning": 0.0,
+      "Service": 0.0,
+      "Price": 0.0,
+      "Global": 0.0
+    },
     "rank_position": 4
   },
   {

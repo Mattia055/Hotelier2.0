@@ -2,6 +2,7 @@ package serverUtil;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -17,6 +18,7 @@ public class ServerMain {
     protected   static Selector SelectorInstance    = null;
     //contatore condiviso con il ShutdownHook
     private     static AtomicBoolean runningFlag    = new AtomicBoolean(true);
+    private     static boolean doNotWait = false;
 
     public static Selector getSelector(){
         return SelectorInstance;
@@ -46,7 +48,8 @@ public class ServerMain {
                 try{System.out.println("Shutdown Hook triggered");
                     runningFlag.set(false);selector.wakeup();
                     System.out.println("Waiting for server to close...");
-                    t.join();
+                    if(!doNotWait)
+                        t.join();
                     ServerContext.Terminate();
                     System.out.println("Server closed");
                 } catch(Exception e){
@@ -96,8 +99,13 @@ public class ServerMain {
                     }
                 }
             }
-
-        } catch(IOException e) { 
+        }
+        catch (BindException e){
+            System.out.println("Porta già in uso");
+            doNotWait = true;
+            System.exit(0);
+        }
+         catch(IOException e) { 
             e.printStackTrace();
         }
 
