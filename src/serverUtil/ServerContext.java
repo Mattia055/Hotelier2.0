@@ -108,7 +108,7 @@ public class ServerContext {
         }
 
         // Inizializza i thread pool
-        MainPool = new ThreadPoolExecutor   (  POOL_CORESIZE, 
+        MainPool = new ThreadPoolExecutor   (   POOL_CORESIZE, 
                                                 POOL_MAXSIZE, 
                                                 POOL_KEEP_ALIVE, 
                                                 TIME_KEEP_ALIVE, 

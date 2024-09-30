@@ -99,9 +99,9 @@ public class Parser {
                     writer.beginArray();
                     while(ListsToSave.hasNext()) {
                         ArrayList<Hotel> hotelsList = ListsToSave.next();
-                        synchronized (hotelsList){
-                            hotelsList.forEach(h -> Gson.toJson(h, HotelT, writer));
-                        }
+                        //synchronized (hotelsList){
+                            hotelsList.forEach(h -> Gson.toJson(h,HotelT, writer));
+                        //}
                     }
                     writer.endArray().flush();
                     //rimpiazza il file principale con il file temporaneo

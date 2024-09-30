@@ -150,58 +150,6 @@ public class HotelierAPI {
         return new APIResponse(response.getError());
     }
 
-    /*
-     * Sembra un duplicato di UserLogin ma più avanti inserirò la crittografia
-     * della password e il codice cambierà
-     */
-    /* 
-    public APIResponse UserRegister(String username, String password) throws CommunicationException, ResponseParsingException {
-        // Example implementation of a user registration request
-        Request request = new Request(Method.REGISTER, username.trim());
-        sendRequest(request);
-
-        Response response = getResponse();
-
-        if(getResponse().getStatus() == Status.FAILURE){
-            return new APIResponse(response.getError());
-        }
-
-        //inserisce la password
-
-        request.setData(password.trim());
-        sendRequest(request);
-        
-        return new APIResponse(getResponse().getError());
-
-    }
-
-    public APIResponse UserLogin(String username, String password) throws CommunicationException, ResponseParsingException {
-        // Example implementation of a user login request
-        Request request = new Request(Method.LOGIN, username.trim());
-        sendRequest(request);
-
-        Response response = getResponse();
-
-        if(getResponse().getStatus() == Status.FAILURE){
-            return new APIResponse(response.getError());
-        }
-
-        //inserisce la password
-
-        request.setData(password.trim());
-        sendRequest(request);
-        
-        return new APIResponse(getResponse().getError());
-    }
-
-    public APIResponse LogoutEverywhere() throws CommunicationException, ResponseParsingException {
-        sendRequest(new Request(Method.EXT_LOGOUT, null));
-
-        return new APIResponse(getResponse().getError());
-        Easer Egg UwU 
-    }*/
-
-
     public APIResponse UserLogin(String username, String password) throws CommunicationException, ResponseParsingException {
         return HandleUserOperation(username, password, Method.LOGIN);
     }
@@ -283,8 +231,7 @@ public class HotelierAPI {
         APIResponse apiResponse = new APIResponse(Status.OK);
         Response.Status res = response.getStatus();
         if(res == Response.Status.FAILURE){
-           apiResponse.setStatus(response.getError());
-           return apiResponse;
+           return new APIResponse(response.getError());
         }
         else if(res == Response.Status.SUCCESS){
             fetch_init = false;
@@ -304,36 +251,6 @@ public class HotelierAPI {
         if(!fetch_init) throw new InvalidMethodInvocation("Invoked HotelsFetch() and last method was not HotelsFetch(City) or HotelsFetchAll(City) fetched all hotels");
         return HotelsFetch(null);
     }
-    
-    
-    /*public APIResponse HotelsFetchAll(String City) throws CommunicationException, ResponseParsingException, NullPointerException {
-        //API call to fetch all hotels 
-        //Calls internally HotelsFetch(String || void) 
-        APIResponse response = HotelsFetch(City);
-        //se la prima risposta da errore allora restituisco errore
-        if(response.getStatus() == Status.NO_SUCH_CITY) return response;
-        ArrayList<HotelDTO> hotels = new ArrayList<HotelDTO>();
-
-        try{
-            while(response.getStatus() == Status.FETCH_LEFT || response.getStatus() == Status.FETCH_DONE){
-                for(HotelDTO hotel : response.getHotelList())
-                    hotels.add(hotel);
-                    
-                if(response.getStatus() == Status.FETCH_DONE)
-                    break;
-                response = HotelsFetch();
-            }
-        } catch(Exception e){
-            e.printStackTrace();
-            //potrebbe essere Communication Exception o ResponseParsingException
-            //A me non interessa più di tanto perche se il primo ciclo while viene preso posso restituire 
-            //FETCH_PARTIAL. Il primo ciclo while va sempre bene altrimenti non sarei qui
-             
-        }
-
-        return new APIResponse(Status.FETCH_PARTIAL, hotels.toArray(new HotelDTO[0]));
-    }
-    */
 
     public APIResponse HotelsFetchAll(String City) throws CommunicationException, ResponseParsingException, NullPointerException {
         APIResponse response = HotelsFetch(City);

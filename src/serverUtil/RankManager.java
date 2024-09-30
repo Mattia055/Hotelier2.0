@@ -51,6 +51,8 @@ public class RankManager implements Runnable {
             try (DatagramSocket UDPsocket = new DatagramSocket()) {
                 byte[] payload = message.getBytes();
                 UDPsocket.send(new DatagramPacket(payload, payload.length, UDPaddress, UDPport));
+
+                //ByteArrayOutputStream a = new ByteArrayOutputStream();
             } catch (Exception e) {
                 e.printStackTrace();
             }

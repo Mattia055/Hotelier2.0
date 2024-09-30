@@ -218,13 +218,13 @@
       "Cancellazione gratuita",
       "Paga in struttura"
     ],
-    "rank": 0.94,
+    "rank": 2.97,
     "rating": {
-      "Position": 0.94,
-      "Cleaning": 0.94,
-      "Service": 0.94,
-      "Price": 0.94,
-      "Global": 0.94
+      "Position": 2.97,
+      "Cleaning": 2.97,
+      "Service": 2.97,
+      "Price": 2.97,
+      "Global": 2.97
     },
     "rank_position": 3
   },
@@ -1139,6 +1139,27 @@
     "rank_position": 0
   },
   {
+    "id": 188,
+    "name": "Hotel Palermo 8",
+    "description": "Un bellissimo hotel a Palermo, in Via Napoli, 35",
+    "city": "Palermo",
+    "phone": "324-4191627",
+    "services": [
+      "Piscina",
+      "Wi-Fi",
+      "Cancellazione gratuita"
+    ],
+    "rank": 3.25,
+    "rating": {
+      "Position": 3.44,
+      "Cleaning": 3.13,
+      "Service": 3.13,
+      "Price": 3.13,
+      "Global": 3.44
+    },
+    "rank_position": 1
+  },
+  {
     "id": 189,
     "name": "Hotel Palermo 9",
     "description": "Un organizzato hotel a Palermo, in Via della fantasia, 13",
@@ -1161,27 +1182,6 @@
       "Service": 2.5,
       "Price": 2.5,
       "Global": 2.5
-    },
-    "rank_position": 1
-  },
-  {
-    "id": 188,
-    "name": "Hotel Palermo 8",
-    "description": "Un bellissimo hotel a Palermo, in Via Napoli, 35",
-    "city": "Palermo",
-    "phone": "324-4191627",
-    "services": [
-      "Piscina",
-      "Wi-Fi",
-      "Cancellazione gratuita"
-    ],
-    "rank": 1.5,
-    "rating": {
-      "Position": 1.88,
-      "Cleaning": 1.25,
-      "Service": 1.25,
-      "Price": 1.25,
-      "Global": 1.88
     },
     "rank_position": 2
   },
@@ -2817,13 +2817,13 @@
       "Frigo in camera",
       "TV in camera"
     ],
-    "rank": 2.5,
+    "rank": 3.75,
     "rating": {
-      "Position": 2.5,
-      "Cleaning": 2.5,
-      "Service": 2.5,
-      "Price": 2.5,
-      "Global": 2.5
+      "Position": 3.75,
+      "Cleaning": 3.75,
+      "Service": 3.75,
+      "Price": 3.75,
+      "Global": 3.75
     },
     "rank_position": 1
   },

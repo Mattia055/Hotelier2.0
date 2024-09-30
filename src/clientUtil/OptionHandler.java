@@ -515,7 +515,7 @@ public static class SearchHotel extends BaseMenu {
                 } catch (Exception e) {
                     Terminate(Ansi.RED + "Fetch failed: " + getStackTraceAsString(e) + Ansi.RESET);
                 }
-                if(response.getStatus() != Status.FETCH_DONE && response.getStatus() != Status.FETCH_LEFT){
+                if(response.getStatus() != Status.FETCH_DONE || response.getStatus() != Status.FETCH_LEFT){
                     message = Ansi.RED + "Fetch failed: " + response.getMessage() + Ansi.RESET;
                     return;
                 } else {
